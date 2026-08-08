@@ -134,17 +134,27 @@
 
       <div class="card">
         <h2>Player 1</h2>
-        <input type="text" placeholder="Enter player name">
+        <input
+          id="player1"
+          type="text"
+          placeholder="Enter player name"
+        >
       </div>
 
       <div class="card">
         <h2>Player 2</h2>
-        <input type="text" placeholder="Enter player name">
+        <input
+          id="player2"
+          type="text"
+          placeholder="Enter player name"
+        >
       </div>
 
     </div>
 
-    <button>Analyze Match</button>
+    <button onclick="analyzeMatch()">
+      Analyze Match
+    </button>
 
     <div class="stats">
 
@@ -183,6 +193,8 @@
     </div>
 
   </div>
+
+  <script src="script.js"></script>
 
 </body>
 </html>
