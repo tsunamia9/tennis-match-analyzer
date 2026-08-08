@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import os
+import httpx
 
 app = FastAPI(
     title="Tennis Match Analyzer API",
@@ -7,8 +9,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow the GitHub Pages frontend to communicate
-# with the backend during development.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,32 +35,37 @@ def health_check():
 
 
 @app.get("/api/players")
-def get_players():
-    return {
-        "players": [
-            {
-                "name": "Carlos Alcaraz",
-                "country": "Spain",
-                "country_code": "ES",
-                "ranking": 1
-            },
-            {
-                "name": "Jannik Sinner",
-                "country": "Italy",
-                "country_code": "IT",
-                "ranking": 2
-            },
-            {
-                "name": "Novak Djokovic",
-                "country": "Serbia",
-                "country_code": "RS",
-                "ranking": 3
-            },
-            {
-                "name": "Alexander Zverev",
-                "country": "Germany",
-                "country_code": "DE",
-                "ranking": 4
-            }
-        ]
+async def get_players():
+    api_key = os.getenv("RAPIDAPI_KEY")
+
+    if not api_key:
+        return {
+            "error": "RAPIDAPI_KEY is not configured",
+            "players": []
+        }
+
+    url = "https://tennis-api-atp-wta-itf.p.rapidapi.com"
+
+    headers = {
+        "x-rapidapi-key": api_key,
+        "x-rapidapi-host": "tennis-api-atp-wta-itf.p.rapidapi.com"
     }
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                headers=headers,
+                timeout=10
+            )
+
+        return {
+            "status_code": response.status_code,
+            "data": response.json()
+        }
+
+    except Exception as error:
+        return {
+            "error": str(error),
+            "players": []
+        }
