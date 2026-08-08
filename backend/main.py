@@ -1,14 +1,16 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 import os
 import httpx
 
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+
 app = FastAPI(
     title="Tennis Match Analyzer API",
-    description="Backend for the Tennis Match Analyzer",
     version="1.0.0"
 )
 
+# Allow our frontend to communicate with the backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,6 +18,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+RAPIDAPI_HOST = "tennis-api-atp-wta-itf.p.rapidapi.com"
 
 
 @app.get("/")
@@ -26,46 +32,53 @@ def home():
     }
 
 
-@app.get("/api/health")
-def health_check():
+@app.get("/api/test")
+async def api_test():
+    if not RAPIDAPI_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="RAPIDAPI_KEY is not configured"
+        )
+
     return {
-        "status": "healthy",
-        "service": "tennis-match-analyzer"
+        "status": "API key detected",
+        "message": "Backend is ready to connect to tennis data 🎾"
     }
 
 
-@app.get("/api/players")
-async def get_players():
-    api_key = os.getenv("RAPIDAPI_KEY")
+@app.get("/api/player/{player_name}")
+async def get_player(player_name: str):
+    if not RAPIDAPI_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="RAPIDAPI_KEY is not configured"
+        )
 
-    if not api_key:
-        return {
-            "error": "RAPIDAPI_KEY is not configured",
-            "players": []
-        }
-
-    url = "https://tennis-api-atp-wta-itf.p.rapidapi.com"
+    url = (
+        f"https://{RAPIDAPI_HOST}"
+        f"/tennis/v2/extend/api/player/{player_name}"
+    )
 
     headers = {
-        "x-rapidapi-key": api_key,
-        "x-rapidapi-host": "tennis-api-atp-wta-itf.p.rapidapi.com"
+        "Content-Type": "application/json",
+        "x-rapidapi-host": RAPIDAPI_HOST,
+        "x-rapidapi-key": RAPIDAPI_KEY,
     }
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                url,
-                headers=headers,
-                timeout=10
+        async with httpx.AsyncClient(timeout=15) as client:
+            response = await client.get(url, headers=headers)
+
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail="Tennis API request failed"
             )
 
-        return {
-            "status_code": response.status_code,
-            "data": response.json()
-        }
+        return response.json()
 
-    except Exception as error:
-        return {
-            "error": str(error),
-            "players": []
-        }
+    except httpx.RequestError as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Connection error: {str(error)}"
+        )
