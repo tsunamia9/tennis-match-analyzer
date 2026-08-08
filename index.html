@@ -23,18 +23,16 @@
 
     .container {
       max-width: 1100px;
-      margin: 0 auto;
+      margin: auto;
     }
-
-    /* HEADER */
 
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 45px;
     }
 
     .logo {
-      font-size: 48px;
+      font-size: 50px;
       margin-bottom: 10px;
     }
 
@@ -48,78 +46,66 @@
       font-size: 17px;
     }
 
-    /* PLAYER SECTION */
+    /* MODE SELECTION */
 
-    .match {
-      display: grid;
-      grid-template-columns: 1fr 100px 1fr;
-      gap: 20px;
-      align-items: center;
-      margin-bottom: 30px;
+    .mode-title {
+      text-align: center;
+      font-size: 25px;
+      margin-bottom: 20px;
     }
 
-    .player-card {
+    .modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .mode-card {
       background: #111827;
       border: 1px solid #1f2937;
       border-radius: 18px;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      padding: 35px;
+      text-align: center;
+      transition: 0.2s;
     }
 
-    .player-card h2 {
-      margin-bottom: 20px;
-      font-size: 22px;
-    }
-
-    .player-card input {
-      width: 100%;
-      margin-bottom: 12px;
-      padding: 13px;
-      border: 1px solid #374151;
-      border-radius: 10px;
-      background: #0f172a;
-      color: white;
-      font-size: 15px;
-      outline: none;
-    }
-
-    .player-card input:focus {
+    .mode-card:hover {
+      transform: translateY(-4px);
       border-color: #22c55e;
     }
 
-    .vs {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #22c55e;
+    .mode-icon {
+      font-size: 45px;
+      margin-bottom: 15px;
     }
 
-    /* BUTTON */
-
-    .button-container {
-      text-align: center;
-      margin: 10px 0 40px;
+    .mode-card h2 {
+      margin-bottom: 12px;
     }
 
-    .analyze-button {
-      padding: 15px 35px;
+    .mode-card p {
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 25px;
+    }
+
+    .mode-button {
+      padding: 12px 25px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #22c55e;
       color: white;
-      font-size: 17px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.25);
     }
 
-    .analyze-button:hover {
+    .mode-button:hover {
       background: #16a34a;
-      transform: translateY(-2px);
     }
 
-    /* STATS */
+    /* SECTIONS */
 
     .section {
       background: #111827;
@@ -130,9 +116,124 @@
     }
 
     .section-title {
-      font-size: 24px;
+      font-size: 25px;
       margin-bottom: 25px;
     }
+
+    .hidden {
+      display: none;
+    }
+
+    /* REAL MATCH */
+
+    .players {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .player-selection {
+      background: #0f172a;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      border: 1px solid #1f2937;
+    }
+
+    .player-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 15px;
+      background: #1f2937;
+    }
+
+    .player-selection h3 {
+      margin-bottom: 15px;
+    }
+
+    select {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #111827;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .vs {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #22c55e;
+    }
+
+    .real-button {
+      display: block;
+      margin: 30px auto 0;
+      padding: 14px 30px;
+      border: none;
+      border-radius: 10px;
+      background: #22c55e;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* MANUAL */
+
+    .manual-players {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .player-card {
+      background: #0f172a;
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid #1f2937;
+    }
+
+    .player-card h3 {
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid #374151;
+      border-radius: 10px;
+      background: #111827;
+      color: white;
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #22c55e;
+    }
+
+    .analyze-button {
+      display: block;
+      margin: 25px auto 0;
+      padding: 14px 30px;
+      border: none;
+      border-radius: 10px;
+      background: #22c55e;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* STATS */
 
     .stat {
       display: grid;
@@ -153,7 +254,6 @@
 
     .stat-value {
       font-weight: bold;
-      font-size: 17px;
     }
 
     /* PERFORMANCE */
@@ -161,24 +261,19 @@
     .performance-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 30px;
+      gap: 25px;
     }
 
     .performance-card {
       background: #0f172a;
       padding: 20px;
       border-radius: 14px;
-      border: 1px solid #1f2937;
-    }
-
-    .performance-card h3 {
-      margin-bottom: 15px;
     }
 
     .score {
-      font-size: 36px;
+      font-size: 35px;
       font-weight: bold;
-      margin-bottom: 15px;
+      margin: 10px 0;
     }
 
     .bar-background {
@@ -193,58 +288,41 @@
       height: 100%;
       width: 0%;
       background: #22c55e;
-      border-radius: 20px;
-      transition: width 0.8s ease;
-    }
-
-    /* ANALYSIS */
-
-    .analysis {
-      text-align: center;
+      transition: width 0.8s;
     }
 
     #result {
+      text-align: center;
       color: #22c55e;
-      font-size: 20px;
+      font-size: 19px;
       font-weight: bold;
       line-height: 1.6;
     }
-
-    /* FOOTER */
 
     footer {
       text-align: center;
       color: #64748b;
       margin-top: 40px;
-      padding-bottom: 20px;
     }
 
-    /* MOBILE */
-
     @media (max-width: 750px) {
-
-      body {
-        padding: 20px 12px;
-      }
 
       h1 {
         font-size: 32px;
       }
 
-      .match {
+      .modes,
+      .manual-players,
+      .performance-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .players {
         grid-template-columns: 1fr;
       }
 
       .vs {
         margin: -5px 0;
-      }
-
-      .performance-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .section {
-        padding: 20px;
       }
     }
   </style>
@@ -252,28 +330,187 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <!-- HEADER -->
+  <header>
+    <div class="logo">🎾</div>
 
-    <header>
-      <div class="logo">🎾</div>
+    <h1>Tennis Match Analyzer</h1>
 
-      <h1>Tennis Match Analyzer</h1>
+    <p class="subtitle">
+      Analyze tennis matches and compare player performance
+    </p>
+  </header>
 
-      <p class="subtitle">
-        Analyze tennis performance using match statistics
+
+  <!-- MODE SELECTION -->
+
+  <h2 class="mode-title">
+    What do you want to analyze?
+  </h2>
+
+  <div class="modes">
+
+    <div class="mode-card">
+
+      <div class="mode-icon">✍️</div>
+
+      <h2>Manual Analysis</h2>
+
+      <p>
+        Enter your own match statistics
+        and analyze the performance.
       </p>
-    </header>
+
+      <button
+        class="mode-button"
+        onclick="showManual()"
+      >
+        Start Manual Analysis
+      </button>
+
+    </div>
 
 
-    <!-- PLAYERS -->
+    <div class="mode-card">
 
-    <div class="match">
+      <div class="mode-icon">🌐</div>
+
+      <h2>Real Match</h2>
+
+      <p>
+        Choose real tennis players and
+        explore their match data.
+      </p>
+
+      <button
+        class="mode-button"
+        onclick="showRealMatch()"
+      >
+        Find a Real Match
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- REAL MATCH -->
+
+  <div
+    id="realMatch"
+    class="section hidden"
+  >
+
+    <h2 class="section-title">
+      🌐 Choose Players
+    </h2>
+
+    <div class="players">
+
+      <div class="player-selection">
+
+        <div class="player-image">
+          👤
+        </div>
+
+        <h3>Player 1</h3>
+
+        <select id="realPlayer1">
+
+          <option value="">
+            Select a player
+          </option>
+
+          <option value="Carlos Alcaraz">
+            Carlos Alcaraz 🇪🇸
+          </option>
+
+          <option value="Jannik Sinner">
+            Jannik Sinner 🇮🇹
+          </option>
+
+          <option value="Novak Djokovic">
+            Novak Djokovic 🇷🇸
+          </option>
+
+          <option value="Alexander Zverev">
+            Alexander Zverev 🇩🇪
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="vs">
+        VS
+      </div>
+
+
+      <div class="player-selection">
+
+        <div class="player-image">
+          👤
+        </div>
+
+        <h3>Player 2</h3>
+
+        <select id="realPlayer2">
+
+          <option value="">
+            Select a player
+          </option>
+
+          <option value="Carlos Alcaraz">
+            Carlos Alcaraz 🇪🇸
+          </option>
+
+          <option value="Jannik Sinner">
+            Jannik Sinner 🇮🇹
+          </option>
+
+          <option value="Novak Djokovic">
+            Novak Djokovic 🇷🇸
+          </option>
+
+          <option value="Alexander Zverev">
+            Alexander Zverev 🇩🇪
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="real-button"
+      onclick="findRealMatch()"
+    >
+      Compare Players
+    </button>
+
+  </div>
+
+
+  <!-- MANUAL ANALYSIS -->
+
+  <div
+    id="manualAnalysis"
+    class="section hidden"
+  >
+
+    <h2 class="section-title">
+      ✍️ Manual Match Analysis
+    </h2>
+
+    <div class="manual-players">
 
       <div class="player-card">
 
-        <h2>👤 Player 1</h2>
+        <h3>Player 1</h3>
 
         <input
           id="player1"
@@ -302,14 +539,9 @@
       </div>
 
 
-      <div class="vs">
-        VS
-      </div>
-
-
       <div class="player-card">
 
-        <h2>👤 Player 2</h2>
+        <h3>Player 2</h3>
 
         <input
           id="player2"
@@ -340,21 +572,22 @@
     </div>
 
 
-    <!-- BUTTON -->
+    <button
+      class="analyze-button"
+      onclick="analyzeMatch()"
+    >
+      Analyze Match 🎾
+    </button>
 
-    <div class="button-container">
-
-      <button
-        class="analyze-button"
-        onclick="analyzeMatch()"
-      >
-        Analyze Match 🎾
-      </button>
-
-    </div>
+  </div>
 
 
-    <!-- STATISTICS -->
+  <!-- RESULTS -->
+
+  <div
+    id="results"
+    class="hidden"
+  >
 
     <div class="section">
 
@@ -378,7 +611,6 @@
 
       </div>
 
-
       <div class="stat">
 
         <span class="stat-label">
@@ -401,7 +633,6 @@
 
       </div>
 
-
       <div class="stat">
 
         <span class="stat-label">
@@ -423,7 +654,6 @@
         </span>
 
       </div>
-
 
       <div class="stat">
 
@@ -449,8 +679,6 @@
 
     </div>
 
-
-    <!-- PERFORMANCE -->
 
     <div class="section">
 
@@ -514,34 +742,29 @@
     </div>
 
 
-    <!-- ANALYSIS -->
-
-    <div class="section analysis">
+    <div class="section">
 
       <h2 class="section-title">
         🧠 Match Analysis
       </h2>
 
       <p id="result">
-        Enter the match statistics above
-        and analyze the performance.
+        Analysis will appear here.
       </p>
 
     </div>
 
-
-    <!-- FOOTER -->
-
-    <footer>
-      🎾 Tennis Match Analyzer
-    </footer>
-
   </div>
 
 
-  <!-- JAVASCRIPT -->
+  <footer>
+    🎾 Tennis Match Analyzer
+  </footer>
 
-  <script src="script.js"></script>
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
