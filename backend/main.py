@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,20 +22,15 @@ app.add_middleware(
 
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
-RAPIDAPI_HOST = (
-    "tennis-api-atp-wta-itf.p.rapidapi.com"
-)
+RAPIDAPI_HOST = "tennis-api-atp-wta-itf.p.rapidapi.com"
 
-BASE_DIR = (
-    Path(__file__).resolve().parent.parent
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 @app.get("/")
 def home():
     return {
-        "message":
-            "Tennis Match Analyzer API is running 🎾",
+        "message": "Tennis Match Analyzer API is running 🎾",
         "status": "online",
     }
 
@@ -51,7 +45,6 @@ def health_check():
 
 @app.get("/api/test")
 async def api_test():
-
     if not RAPIDAPI_KEY:
         raise HTTPException(
             status_code=500,
@@ -60,14 +53,12 @@ async def api_test():
 
     return {
         "status": "API key detected",
-        "message":
-            "Backend is ready to connect to tennis data 🎾",
+        "message": "Backend is ready to connect to tennis data 🎾",
     }
 
 
 @app.get("/api/player/{player_name}")
 async def get_player(player_name: str):
-
     if not RAPIDAPI_KEY:
         raise HTTPException(
             status_code=500,
@@ -87,18 +78,13 @@ async def get_player(player_name: str):
     }
 
     try:
-
-        async with httpx.AsyncClient(
-            timeout=15
-        ) as client:
-
+        async with httpx.AsyncClient(timeout=15) as client:
             response = await client.get(
                 url,
                 headers=headers,
             )
 
         if response.status_code != 200:
-
             raise HTTPException(
                 status_code=response.status_code,
                 detail=response.text,
@@ -107,7 +93,6 @@ async def get_player(player_name: str):
         return response.json()
 
     except httpx.RequestError as error:
-
         raise HTTPException(
             status_code=500,
             detail=f"Connection error: {str(error)}",
@@ -116,15 +101,19 @@ async def get_player(player_name: str):
 
 @app.get("/app")
 def frontend():
-
-    return FileResponse(
-        BASE_DIR / "index.html"
-    )
+    return FileResponse(BASE_DIR / "index.html")
 
 
 @app.get("/script.js")
 def javascript():
+    return FileResponse(BASE_DIR / "script.js")
 
-    return FileResponse(
-        BASE_DIR / "script.js"
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
     )
