@@ -1,1156 +1,825 @@
-// ============================================================
-// TENNIS MATCH ANALYZER
-// ============================================================
-
-// ------------------------------------------------------------
-// PLAYER DATABASE
-// ------------------------------------------------------------
-
-const CURRENT_PLAYERS = [
-  "Jannik Sinner",
-  "Alexander Zverev",
-  "Carlos Alcaraz",
-  "Felix Auger-Aliassime",
-  "Alex de Minaur",
-  "Ben Shelton",
-  "Novak Djokovic",
-  "Daniil Medvedev",
-  "Taylor Fritz",
-  "Alexander Bublik",
-  "Lorenzo Musetti",
-  "Jiri Lehecka",
-  "Andrey Rublev",
-  "Flavio Cobolli",
-  "Karen Khachanov",
-  "Casper Ruud",
-  "Luciano Darderi",
-  "Learner Tien",
-  "Valentin Vacherot",
-  "Arthur Fils",
-  "Tommy Paul",
-  "Frances Tiafoe",
-  "Alejandro Davidovich Fokina",
-  "Cameron Norrie",
-  "Arthur Rinderknech",
-  "Francisco Cerundolo",
-  "Jakub Mensik",
-  "Tomas Martin Etcheverry",
-  "Rafael Jodar",
-  "Joao Fonseca",
-  "Ignacio Buse",
-  "Ugo Humbert",
-  "Tallon Griekspoor",
-  "Corentin Moutet",
-  "Brandon Nakashima",
-  "Alejandro Tabilo",
-  "Alexander Blockx",
-  "Mariano Navone",
-  "Denis Shapovalov",
-  "Zizou Bergs",
-  "Jaume Munar",
-  "Alex Michelsen",
-  "Tomas Machac",
-  "Holger Rune",
-  "Adrian Mannarino",
-  "Marin Cilic",
-  "Sebastian Korda",
-  "Miomir Kecmanovic",
-  "Gabriel Diallo",
-  "Ethan Quinn"
-];
-
-const LEGENDS = [
-  "Roger Federer",
-  "Rafael Nadal",
-  "Novak Djokovic",
-  "Andy Murray",
-  "Stan Wawrinka",
-  "Juan Martin del Potro",
-  "Andy Roddick",
-  "David Ferrer",
-  "Jo-Wilfried Tsonga",
-  "Tomas Berdych",
-  "Dominic Thiem",
-  "Nick Kyrgios",
-  "Grigor Dimitrov",
-  "Gael Monfils",
-  "Kei Nishikori",
-  "Richard Gasquet",
-  "Milos Raonic",
-  "John Isner",
-  "Ivo Karlovic",
-  "David Nalbandian",
-  "Fernando Verdasco",
-  "Feliciano Lopez",
-  "Gilles Simon",
-  "Joao Sousa",
-  "Ernests Gulbis",
-  "Marcos Baghdatis",
-  "Tommy Haas",
-  "Nikolay Davydenko",
-  "Robin Soderling",
-  "Lleyton Hewitt",
-  "Gustavo Kuerten",
-  "Andre Agassi",
-  "Pete Sampras",
-  "Boris Becker",
-  "Stefan Edberg",
-  "Ivan Lendl",
-  "John McEnroe",
-  "Bjorn Borg",
-  "Jimmy Connors",
-  "Mats Wilander",
-  "Michael Chang",
-  "Thomas Muster",
-  "Jim Courier",
-  "Juan Carlos Ferrero",
-  "Marat Safin"
-];
-
-const ALL_PLAYERS = [
-  ...CURRENT_PLAYERS,
-  ...LEGENDS.filter(
-    player => !CURRENT_PLAYERS.includes(player)
-  )
-];
-
-// ------------------------------------------------------------
-// MODE SELECTION
-// ------------------------------------------------------------
-
-function showManual() {
-  document
-    .getElementById("manualAnalysis")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("realMatch")
-    .classList.add("hidden");
-
-  document
-    .getElementById("manualAnalysis")
-    .scrollIntoView({
-      behavior: "smooth"
-    });
-}
-
-function showRealMatch() {
-  document
-    .getElementById("realMatch")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("manualAnalysis")
-    .classList.add("hidden");
-
-  document
-    .getElementById("realMatch")
-    .scrollIntoView({
-      behavior: "smooth"
-    });
-}
-
-// ------------------------------------------------------------
-// PLAYER SELECTORS
-// ------------------------------------------------------------
-
-function populatePlayers(list = ALL_PLAYERS) {
-
-  const select1 =
-    document.getElementById("realPlayer1");
-
-  const select2 =
-    document.getElementById("realPlayer2");
-
-  if (!select1 || !select2) {
-    return;
-  }
-
-  select1.innerHTML = "";
-  select2.innerHTML = "";
-
-  const currentGroup =
-    document.createElement("optgroup");
-
-  currentGroup.label =
-    "🔥 Current ATP Players";
-
-  CURRENT_PLAYERS
-    .filter(player => list.includes(player))
-    .forEach(player => {
-
-      const option =
-        document.createElement("option");
-
-      option.value = player;
-      option.textContent = player;
-
-      currentGroup.appendChild(option);
-    });
-
-  const legendGroup =
-    document.createElement("optgroup");
-
-  legendGroup.label =
-    "👑 Legends & Icons";
-
-  LEGENDS
-    .filter(player => list.includes(player))
-    .forEach(player => {
-
-      const option =
-        document.createElement("option");
-
-      option.value = player;
-      option.textContent = player;
-
-      legendGroup.appendChild(option);
-    });
-
-  select1.appendChild(currentGroup);
-  select1.appendChild(legendGroup);
-
-  const currentGroup2 =
-    currentGroup.cloneNode(true);
-
-  const legendGroup2 =
-    legendGroup.cloneNode(true);
-
-  select2.appendChild(currentGroup2);
-  select2.appendChild(legendGroup2);
-
-  select1.value =
-    CURRENT_PLAYERS.includes("Carlos Alcaraz")
-      ? "Carlos Alcaraz"
-      : ALL_PLAYERS[0];
-
-  select2.value =
-    CURRENT_PLAYERS.includes("Jannik Sinner")
-      ? "Jannik Sinner"
-      : ALL_PLAYERS[1];
-}
-
-// ------------------------------------------------------------
-// PLAYER SEARCH
-// ------------------------------------------------------------
-
-function filterPlayers() {
-
-  const input =
-    document.getElementById("playerSearch");
-
-  if (!input) {
-    return;
-  }
-
-  const query =
-    input.value
-      .trim()
-      .toLowerCase();
-
-  if (!query) {
-    populatePlayers();
-    return;
-  }
-
-  const filtered =
-    ALL_PLAYERS.filter(player =>
-      player.toLowerCase().includes(query)
-    );
-
-  populatePlayers(filtered);
-}
-
-// ------------------------------------------------------------
-// REAL MATCH
-// ------------------------------------------------------------
-
-async function findRealMatch() {
-
-  const player1 =
-    document.getElementById("realPlayer1").value;
-
-  const player2 =
-    document.getElementById("realPlayer2").value;
-
-  if (!player1 || !player2) {
-    alert("Please select both players.");
-    return;
-  }
-
-  if (player1 === player2) {
-    alert("Please select two different players.");
-    return;
-  }
-
-  showComparisonSections();
-
-  setLoadingState();
-
-  try {
-
-    const [data1, data2] =
-      await Promise.all([
-        fetchPlayer(player1),
-        fetchPlayer(player2)
-      ]);
-
-    renderPlayer(
-      data1,
-      player1,
-      "playerResult1"
-    );
-
-    renderPlayer(
-      data2,
-      player2,
-      "playerResult2"
-    );
-
-    updatePerformance(
-      data1,
-      data2,
-      player1,
-      player2
-    );
-
-    updateBasicH2H(
-      data1,
-      data2,
-      player1,
-      player2
-    );
-
-    updateAnalysis(
-      data1,
-      data2,
-      player1,
-      player2
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Match analysis error:",
-      error
-    );
-
-    document.getElementById(
-      "playerResult1"
-    ).innerHTML = `
-      <div class="status error">
-        ⚠️ ${escapeHtml(error.message)}
-      </div>
-    `;
-
-    document.getElementById(
-      "playerResult2"
-    ).innerHTML = `
-      <div class="status error">
-        ⚠️ Could not load player comparison.
-      </div>
-    `;
-  }
-}
-
-// ------------------------------------------------------------
-// API REQUEST
-// ------------------------------------------------------------
-
-async function fetchPlayer(playerName) {
-
-  const response =
-    await fetch(
-      `/api/player/${encodeURIComponent(playerName)}`
-    );
-
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error(
-      "Invalid response from tennis API."
-    );
-  }
-
-  if (!response.ok) {
-
-    throw new Error(
-      data.detail ||
-      "Player could not be found."
-    );
-  }
-
-  return data;
-}
-
-// ------------------------------------------------------------
-// PLAYER CARD
-// ------------------------------------------------------------
-
-function renderPlayer(
-  data,
-  fallbackName,
-  elementId
-) {
-
-  const element =
-    document.getElementById(elementId);
-
-  if (!element) {
-    return;
-  }
-
-  const name =
-    getValue(
-      data,
-      [
-        "name",
-        "playerName",
-        "fullName",
-        "displayName"
-      ],
-      fallbackName
-    );
-
-  const rank =
-    getValue(
-      data,
-      [
-        "currentRank",
-        "rank",
-        "ranking",
-        "rankingPosition"
-      ],
-      "N/A"
-    );
-
-  const country =
-    getCountry(data);
-
-  const hand =
-    getValue(
-      data,
-      [
-        "hand",
-        "playingHand",
-        "dominantHand"
-      ],
-      "N/A"
-    );
-
-  const birthDate =
-    getValue(
-      data,
-      [
-        "birthDate",
-        "dateOfBirth",
-        "dob"
-      ],
-      "N/A"
-    );
-
-  element.innerHTML = `
-
-    <div class="player-result-header">
-
-      <div class="player-result-avatar">
-        🎾
-      </div>
-
-      <div>
-
-        <h3>
-          ${escapeHtml(name)}
-        </h3>
-
-        <p>
-          ${escapeHtml(country)}
-        </p>
-
-      </div>
-
-    </div>
-
-    <div class="rank-box">
-
-      <span>
-        World Ranking
-      </span>
-
-      <strong>
-        #${escapeHtml(String(rank))}
-      </strong>
-
-    </div>
-
-    <div class="data-row">
-
-      <span>
-        Country
-      </span>
-
-      <strong>
-        ${escapeHtml(country)}
-      </strong>
-
-    </div>
-
-    <div class="data-row">
-
-      <span>
-        Playing Hand
-      </span>
-
-      <strong>
-        ${escapeHtml(String(hand))}
-      </strong>
-
-    </div>
-
-    <div class="data-row">
-
-      <span>
-        Birth Date
-      </span>
-
-      <strong>
-        ${escapeHtml(String(birthDate))}
-      </strong>
-
-    </div>
-
-    <div class="status">
-      🟢 Live API profile loaded
-    </div>
-  `;
-}
-
-// ------------------------------------------------------------
-// PERFORMANCE
-// ------------------------------------------------------------
-
-function updatePerformance(
-  data1,
-  data2,
-  player1,
-  player2
-) {
-
-  const rank1 =
-    Number(
-      getValue(
-        data1,
-        ["currentRank", "rank", "ranking"],
-        100
-      )
-    ) || 100;
-
-  const rank2 =
-    Number(
-      getValue(
-        data2,
-        ["currentRank", "rank", "ranking"],
-        100
-      )
-    ) || 100;
-
-  const score1 =
-    calculateProfileScore(
-      data1,
-      rank1
-    );
-
-  const score2 =
-    calculateProfileScore(
-      data2,
-      rank2
-    );
-
-  const total =
-    score1 + score2;
-
-  let percentage1 = 50;
-  let percentage2 = 50;
-
-  if (total > 0) {
-
-    percentage1 =
-      Math.round(
-        score1 / total * 100
-      );
-
-    percentage2 =
-      100 - percentage1;
-  }
-
-  document.getElementById(
-    "performanceName1"
-  ).textContent = player1;
-
-  document.getElementById(
-    "performanceName2"
-  ).textContent = player2;
-
-  document.getElementById(
-    "score1"
-  ).textContent =
-    percentage1 + "%";
-
-  document.getElementById(
-    "score2"
-  ).textContent =
-    percentage2 + "%";
-
-  document.getElementById(
-    "bar1"
-  ).style.width =
-    percentage1 + "%";
-
-  document.getElementById(
-    "bar2"
-  ).style.width =
-    percentage2 + "%";
-}
-
-function calculateProfileScore(
-  data,
-  rank
-) {
-
-  const rankScore =
-    Math.max(
-      1,
-      101 - Math.min(rank, 100)
-    );
-
-  const wins =
-    Number(
-      getValue(
-        data,
-        [
-          "wins",
-          "careerWins",
-          "seasonWins"
-        ],
-        0
-      )
-    ) || 0;
-
-  const titles =
-    Number(
-      getValue(
-        data,
-        [
-          "titles",
-          "careerTitles",
-          "grandSlamTitles"
-        ],
-        0
-      )
-    ) || 0;
-
-  return (
-    rankScore * 3 +
-    Math.min(wins, 100) +
-    titles * 5
-  );
-}
-
-// ------------------------------------------------------------
-// BASIC H2H
-// ------------------------------------------------------------
-
-function updateBasicH2H(
-  data1,
-  data2,
-  player1,
-  player2
-) {
-
-  document.getElementById(
-    "h2hPlayer1"
-  ).textContent = player1;
-
-  document.getElementById(
-    "h2hPlayer2"
-  ).textContent = player2;
-
-  document.getElementById(
-    "h2hCountry1"
-  ).textContent =
-    getCountry(data1);
-
-  document.getElementById(
-    "h2hCountry2"
-  ).textContent =
-    getCountry(data2);
-
-  const wins1 =
-    Number(
-      getValue(
-        data1,
-        [
-          "headToHeadWins",
-          "h2hWins"
-        ],
-        0
-      )
-    ) || 0;
-
-  const wins2 =
-    Number(
-      getValue(
-        data2,
-        [
-          "headToHeadWins",
-          "h2hWins"
-        ],
-        0
-      )
-    ) || 0;
-
-  document.getElementById(
-    "h2hWins1"
-  ).textContent = wins1;
-
-  document.getElementById(
-    "h2hWins2"
-  ).textContent = wins2;
-
-  const matches =
-    wins1 + wins2;
-
-  document.getElementById(
-    "h2hMatches"
-  ).textContent =
-    matches > 0
-      ? `${matches} Matches`
-      : "No H2H data";
-
-  if (matches > 0) {
-
-    const percentage1 =
-      wins1 / matches * 100;
-
-    document.getElementById(
-      "h2hLeft"
-    ).style.width =
-      percentage1 + "%";
-
-    document.getElementById(
-      "h2hRight"
-    ).style.width =
-      (100 - percentage1) + "%";
-  }
-}
-
-// ------------------------------------------------------------
-// ANALYSIS
-// ------------------------------------------------------------
-
-function updateAnalysis(
-  data1,
-  data2,
-  player1,
-  player2
-) {
-
-  const rank1 =
-    Number(
-      getValue(
-        data1,
-        ["currentRank", "rank", "ranking"],
-        100
-      )
-    ) || 100;
-
-  const rank2 =
-    Number(
-      getValue(
-        data2,
-        ["currentRank", "rank", "ranking"],
-        100
-      )
-    ) || 100;
-
-  let text;
-
-  if (rank1 < rank2) {
-
-    text =
-      `${player1} currently has the stronger ranking profile. ` +
-      `The ranking advantage suggests stronger recent tour performance, ` +
-      `although a ranking alone cannot predict the result of an individual match.`;
-
-  } else if (rank2 < rank1) {
-
-    text =
-      `${player2} currently has the stronger ranking profile. ` +
-      `The ranking advantage suggests stronger recent tour performance, ` +
-      `although a ranking alone cannot predict the result of an individual match.`;
-
-  } else {
-
-    text =
-      `Both players have a similar ranking profile. ` +
-      `The matchup would likely depend more heavily on surface, form, ` +
-      `serve performance and head-to-head history.`;
-  }
-
-  document.getElementById(
-    "analysisText"
-  ).textContent = text;
-}
-
-// ------------------------------------------------------------
-// UI STATES
-// ------------------------------------------------------------
-
-function showComparisonSections() {
-
-  [
-    "comparisonSection",
-    "performanceSection",
-    "h2hSection",
-    "recentMatchesSection",
-    "analysisSection"
-  ].forEach(id => {
-
-    const element =
-      document.getElementById(id);
-
-    if (element) {
-      element.classList.remove("hidden");
+document.addEventListener("DOMContentLoaded", () => {
+
+    // --------------------------------------------------
+    // PLAYER LIST
+    // --------------------------------------------------
+
+    const players = [
+        "Jannik Sinner",
+        "Carlos Alcaraz",
+        "Novak Djokovic",
+        "Alexander Zverev",
+        "Daniil Medvedev",
+        "Taylor Fritz",
+        "Alex de Minaur",
+        "Ben Shelton",
+        "Felix Auger-Aliassime",
+        "Lorenzo Musetti",
+        "Andrey Rublev",
+        "Casper Ruud",
+        "Holger Rune",
+        "Jack Draper",
+        "Tommy Paul",
+        "Frances Tiafoe",
+        "Alejandro Davidovich Fokina",
+        "Cameron Norrie",
+        "Brandon Nakashima",
+        "Sebastian Korda"
+    ];
+
+    const select1 = document.getElementById("realPlayer1");
+    const select2 = document.getElementById("realPlayer2");
+
+    if (!select1 || !select2) {
+        console.error("Player dropdowns not found.");
+        return;
     }
-  });
-}
 
-function setLoadingState() {
 
-  document.getElementById(
-    "playerResult1"
-  ).innerHTML = `
-    <div class="status loading">
-      ⏳ Loading player 1...
-    </div>
-  `;
+    // --------------------------------------------------
+    // POPULATE DROPDOWNS
+    // --------------------------------------------------
 
-  document.getElementById(
-    "playerResult2"
-  ).innerHTML = `
-    <div class="status loading">
-      ⏳ Loading player 2...
-    </div>
-  `;
-}
+    function populatePlayers(list = players) {
 
-// ------------------------------------------------------------
-// MANUAL MATCH ANALYZER
-// ------------------------------------------------------------
+        select1.innerHTML = "";
+        select2.innerHTML = "";
 
-function analyzeMatch() {
+        list.forEach(player => {
 
-  const player1 =
-    document
-      .getElementById("player1")
-      .value
-      .trim();
+            const option1 = document.createElement("option");
+            option1.value = player;
+            option1.textContent = player;
 
-  const player2 =
-    document
-      .getElementById("player2")
-      .value
-      .trim();
+            const option2 = document.createElement("option");
+            option2.value = player;
+            option2.textContent = player;
 
-  const serve1 =
-    Number(
-      document
-        .getElementById("serve1")
-        .value
-    );
+            select1.appendChild(option1);
+            select2.appendChild(option2);
+        });
 
-  const serve2 =
-    Number(
-      document
-        .getElementById("serve2")
-        .value
-    );
+        if (list.includes("Carlos Alcaraz")) {
+            select1.value = "Carlos Alcaraz";
+        }
 
-  const winners1 =
-    Number(
-      document
-        .getElementById("winners1")
-        .value
-    );
-
-  const winners2 =
-    Number(
-      document
-        .getElementById("winners2")
-        .value
-    );
-
-  const errors1 =
-    Number(
-      document
-        .getElementById("errors1")
-        .value
-    );
-
-  const errors2 =
-    Number(
-      document
-        .getElementById("errors2")
-        .value
-    );
-
-  if (!player1 || !player2) {
-    alert(
-      "Please enter both player names."
-    );
-    return;
-  }
-
-  if (
-    serve1 < 0 ||
-    serve1 > 100 ||
-    serve2 < 0 ||
-    serve2 > 100 ||
-    winners1 < 0 ||
-    winners2 < 0 ||
-    errors1 < 0 ||
-    errors2 < 0
-  ) {
-    alert(
-      "Please enter valid statistics."
-    );
-    return;
-  }
-
-  document.getElementById(
-    "player1Name"
-  ).textContent = player1;
-
-  document.getElementById(
-    "player2Name"
-  ).textContent = player2;
-
-  document.getElementById(
-    "serveResult1"
-  ).textContent =
-    serve1 + "%";
-
-  document.getElementById(
-    "serveResult2"
-  ).textContent =
-    serve2 + "%";
-
-  document.getElementById(
-    "winnerResult1"
-  ).textContent =
-    winners1;
-
-  document.getElementById(
-    "winnerResult2"
-  ).textContent =
-    winners2;
-
-  document.getElementById(
-    "errorResult1"
-  ).textContent =
-    errors1;
-
-  document.getElementById(
-    "errorResult2"
-  ).textContent =
-    errors2;
-
-  const score1 =
-    Math.max(
-      serve1 +
-      winners1 * 2 -
-      errors1,
-      0
-    );
-
-  const score2 =
-    Math.max(
-      serve2 +
-      winners2 * 2 -
-      errors2,
-      0
-    );
-
-  const total =
-    score1 + score2;
-
-  let percentage1 = 50;
-  let percentage2 = 50;
-
-  if (total > 0) {
-
-    percentage1 =
-      Math.round(
-        score1 / total * 100
-      );
-
-    percentage2 =
-      100 - percentage1;
-  }
-
-  document.getElementById(
-    "performanceName1"
-  ).textContent = player1;
-
-  document.getElementById(
-    "performanceName2"
-  ).textContent = player2;
-
-  document.getElementById(
-    "score1"
-  ).textContent =
-    percentage1 + "%";
-
-  document.getElementById(
-    "score2"
-  ).textContent =
-    percentage2 + "%";
-
-  document.getElementById(
-    "bar1"
-  ).style.width =
-    percentage1 + "%";
-
-  document.getElementById(
-    "bar2"
-  ).style.width =
-    percentage2 + "%";
-
-  let result;
-
-  if (percentage1 > percentage2) {
-
-    result =
-      `${player1} had the stronger statistical performance. 🏆`;
-
-  } else if (percentage2 > percentage1) {
-
-    result =
-      `${player2} had the stronger statistical performance. 🏆`;
-
-  } else {
-
-    result =
-      "Both players had an equal statistical performance. 🤝";
-  }
-
-  document.getElementById(
-    "result"
-  ).textContent = result;
-
-  document.getElementById(
-    "results"
-  ).classList.remove("hidden");
-
-  document.getElementById(
-    "results"
-  ).scrollIntoView({
-    behavior: "smooth"
-  });
-}
-
-// ------------------------------------------------------------
-// HELPERS
-// ------------------------------------------------------------
-
-function getValue(
-  data,
-  keys,
-  fallback
-) {
-
-  for (const key of keys) {
-
-    if (
-      data &&
-      data[key] !== undefined &&
-      data[key] !== null &&
-      data[key] !== ""
-    ) {
-      return data[key];
+        if (list.includes("Jannik Sinner")) {
+            select2.value = "Jannik Sinner";
+        }
     }
-  }
-
-  return fallback;
-}
-
-function getCountry(data) {
-
-  if (!data) {
-    return "Unknown";
-  }
-
-  if (
-    data.country &&
-    typeof data.country === "object"
-  ) {
-
-    return (
-      data.country.name ||
-      data.country.code ||
-      "Unknown"
-    );
-  }
-
-  return (
-    data.country ||
-    data.nationality ||
-    "Unknown"
-  );
-}
-
-function escapeHtml(value) {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-// ------------------------------------------------------------
-// INITIALIZE
-// ------------------------------------------------------------
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
 
     populatePlayers();
 
-    const realMatch =
-      document.getElementById(
-        "realMatch"
-      );
+    console.log("Players loaded:", players.length);
 
-    const manual =
-      document.getElementById(
-        "manualAnalysis"
-      );
 
-    if (realMatch) {
-      realMatch.classList.remove(
-        "hidden"
-      );
+    // --------------------------------------------------
+    // MODE SWITCHING
+    // --------------------------------------------------
+
+    window.showManual = function () {
+
+        document.getElementById("manualAnalysis")?.classList.remove("hidden");
+
+        document.getElementById("realMatch")?.classList.add("hidden");
+        document.getElementById("comparisonSection")?.classList.add("hidden");
+        document.getElementById("performanceSection")?.classList.add("hidden");
+        document.getElementById("h2hSection")?.classList.add("hidden");
+        document.getElementById("recentMatchesSection")?.classList.add("hidden");
+        document.getElementById("analysisSection")?.classList.add("hidden");
+        document.getElementById("results")?.classList.add("hidden");
+
+        document.getElementById("manualAnalysis")?.scrollIntoView({
+            behavior: "smooth"
+        });
+    };
+
+
+    window.showRealMatch = function () {
+
+        document.getElementById("realMatch")?.classList.remove("hidden");
+
+        document.getElementById("manualAnalysis")?.classList.add("hidden");
+        document.getElementById("results")?.classList.add("hidden");
+
+        document.getElementById("realMatch")?.scrollIntoView({
+            behavior: "smooth"
+        });
+    };
+
+
+    // --------------------------------------------------
+    // PLAYER SEARCH
+    // --------------------------------------------------
+
+    const playerSearch = document.getElementById("playerSearch");
+
+    if (playerSearch) {
+
+        playerSearch.addEventListener("input", () => {
+
+            const search = playerSearch.value
+                .toLowerCase()
+                .trim();
+
+            const filteredPlayers = players.filter(player =>
+                player.toLowerCase().includes(search)
+            );
+
+            populatePlayers(filteredPlayers);
+        });
     }
 
-    if (manual) {
-      manual.classList.add(
-        "hidden"
-      );
+
+    // --------------------------------------------------
+    // API REQUEST
+    // --------------------------------------------------
+
+    async function getPlayer(playerName) {
+
+        const encodedName = encodeURIComponent(playerName);
+
+        const response = await fetch(
+            `/api/player/${encodedName}`
+        );
+
+        if (!response.ok) {
+
+            let message = "Failed to load player.";
+
+            try {
+                const errorData = await response.json();
+
+                if (errorData.detail) {
+                    message = errorData.detail;
+                }
+
+            } catch {
+                // Ignore JSON error
+            }
+
+            throw new Error(message);
+        }
+
+        return await response.json();
     }
-  }
-);
+
+
+    // --------------------------------------------------
+    // HELPERS
+    // --------------------------------------------------
+
+    function getRank(player) {
+
+        if (
+            player.rank === null ||
+            player.rank === undefined ||
+            player.rank === ""
+        ) {
+            return "N/A";
+        }
+
+        return player.rank;
+    }
+
+
+    function getCountry(player) {
+        return player.country || "Unknown";
+    }
+
+
+    function getHand(player) {
+        return player.hand || "Unknown";
+    }
+
+
+    function getBirthDate(player) {
+        return player.birthDate || "Unknown";
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    // --------------------------------------------------
+    // PLAYER CARD
+    // --------------------------------------------------
+
+    function renderPlayerCard(player, elementId) {
+
+        const container = document.getElementById(elementId);
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = `
+
+            <div class="player-result-header">
+
+                <div class="player-result-avatar">
+                    🎾
+                </div>
+
+                <div>
+                    <h3>
+                        ${escapeHtml(player.name)}
+                    </h3>
+
+                    <p>
+                        Professional player profile
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="rank-box">
+
+                <span>
+                    ATP Ranking
+                </span>
+
+                <strong>
+                    #${escapeHtml(String(getRank(player)))}
+                </strong>
+
+            </div>
+
+            <div class="data-row">
+
+                <span>
+                    Country
+                </span>
+
+                <strong>
+                    ${escapeHtml(getCountry(player))}
+                </strong>
+
+            </div>
+
+            <div class="data-row">
+
+                <span>
+                    Playing Hand
+                </span>
+
+                <strong>
+                    ${escapeHtml(getHand(player))}
+                </strong>
+
+            </div>
+
+            <div class="data-row">
+
+                <span>
+                    Birth Date
+                </span>
+
+                <strong>
+                    ${escapeHtml(getBirthDate(player))}
+                </strong>
+
+            </div>
+        `;
+    }
+
+
+    // --------------------------------------------------
+    // PERFORMANCE
+    // --------------------------------------------------
+
+    function calculatePerformance(rank1, rank2) {
+
+        const r1 = Number(rank1);
+        const r2 = Number(rank2);
+
+        if (!Number.isFinite(r1) || !Number.isFinite(r2)) {
+            return {
+                score1: 50,
+                score2: 50
+            };
+        }
+
+        const total = r1 + r2;
+
+        if (total <= 0) {
+            return {
+                score1: 50,
+                score2: 50
+            };
+        }
+
+        return {
+            score1: Math.round((r2 / total) * 100),
+            score2: Math.round((r1 / total) * 100)
+        };
+    }
+
+
+    function renderPerformance(player1, player2) {
+
+        const name1 = document.getElementById("performanceName1");
+        const name2 = document.getElementById("performanceName2");
+
+        const score1 = document.getElementById("score1");
+        const score2 = document.getElementById("score2");
+
+        const bar1 = document.getElementById("bar1");
+        const bar2 = document.getElementById("bar2");
+
+        const note = document.getElementById("performanceNote");
+
+        if (!name1 || !name2 || !score1 || !score2) {
+            return;
+        }
+
+        const performance = calculatePerformance(
+            player1.rank,
+            player2.rank
+        );
+
+        name1.textContent = player1.name;
+        name2.textContent = player2.name;
+
+        score1.textContent = `${performance.score1}%`;
+        score2.textContent = `${performance.score2}%`;
+
+        if (bar1) {
+            bar1.style.width = `${performance.score1}%`;
+        }
+
+        if (bar2) {
+            bar2.style.width = `${performance.score2}%`;
+        }
+
+        if (note) {
+
+            if (
+                Number.isFinite(Number(player1.rank)) &&
+                Number.isFinite(Number(player2.rank))
+            ) {
+
+                note.textContent =
+                    "The comparison is based on current ATP ranking positions.";
+
+            } else {
+
+                note.textContent =
+                    "Ranking data was not available for both players.";
+            }
+        }
+    }
+
+
+    // --------------------------------------------------
+    // HEAD TO HEAD
+    // --------------------------------------------------
+
+    function renderHeadToHead(player1, player2) {
+
+        const name1 = document.getElementById("h2hPlayer1");
+        const name2 = document.getElementById("h2hPlayer2");
+
+        const country1 = document.getElementById("h2hCountry1");
+        const country2 = document.getElementById("h2hCountry2");
+
+        const wins1 = document.getElementById("h2hWins1");
+        const wins2 = document.getElementById("h2hWins2");
+
+        const matches = document.getElementById("h2hMatches");
+
+        const left = document.getElementById("h2hLeft");
+        const right = document.getElementById("h2hRight");
+
+        const note = document.getElementById("h2hNote");
+
+        if (!name1 || !name2) {
+            return;
+        }
+
+        name1.textContent = player1.name;
+        name2.textContent = player2.name;
+
+        if (country1) {
+            country1.textContent = getCountry(player1);
+        }
+
+        if (country2) {
+            country2.textContent = getCountry(player2);
+        }
+
+        if (wins1) {
+            wins1.textContent = "—";
+        }
+
+        if (wins2) {
+            wins2.textContent = "—";
+        }
+
+        if (matches) {
+            matches.textContent = "—";
+        }
+
+        if (left) {
+            left.style.width = "50%";
+        }
+
+        if (right) {
+            right.style.width = "50%";
+        }
+
+        if (note) {
+            note.textContent =
+                "Verified head-to-head data is not available from the current profile endpoint.";
+        }
+    }
+
+
+    // --------------------------------------------------
+    // ANALYSIS
+    // --------------------------------------------------
+
+    function renderAnalysis(player1, player2) {
+
+        const analysisText =
+            document.getElementById("analysisText");
+
+        if (!analysisText) {
+            return;
+        }
+
+        const rank1 = Number(player1.rank);
+        const rank2 = Number(player2.rank);
+
+        if (
+            Number.isFinite(rank1) &&
+            Number.isFinite(rank2)
+        ) {
+
+            if (rank1 < rank2) {
+
+                analysisText.textContent =
+                    `${player1.name} currently has the higher ATP ranking ` +
+                    `(#${rank1}) compared with ${player2.name} (#${rank2}).`;
+
+            } else if (rank2 < rank1) {
+
+                analysisText.textContent =
+                    `${player2.name} currently has the higher ATP ranking ` +
+                    `(#${rank2}) compared with ${player1.name} (#${rank1}).`;
+
+            } else {
+
+                analysisText.textContent =
+                    "Both players currently have the same ranking position.";
+            }
+
+        } else {
+
+            analysisText.textContent =
+                `The profiles of ${player1.name} and ${player2.name} were loaded, ` +
+                "but ranking data was not available.";
+        }
+    }
+
+
+    // --------------------------------------------------
+    // HIDE REAL RESULTS
+    // --------------------------------------------------
+
+    function hideRealResults() {
+
+        document.getElementById("comparisonSection")
+            ?.classList.add("hidden");
+
+        document.getElementById("performanceSection")
+            ?.classList.add("hidden");
+
+        document.getElementById("h2hSection")
+            ?.classList.add("hidden");
+
+        document.getElementById("recentMatchesSection")
+            ?.classList.add("hidden");
+
+        document.getElementById("analysisSection")
+            ?.classList.add("hidden");
+    }
+
+
+    // --------------------------------------------------
+    // REAL PLAYER ANALYSIS
+    // --------------------------------------------------
+
+    window.findRealMatch = async function () {
+
+        const player1Name = select1.value;
+        const player2Name = select2.value;
+
+        if (!player1Name || !player2Name) {
+
+            alert("Please select two players.");
+            return;
+        }
+
+        if (player1Name === player2Name) {
+
+            alert("Please select two different players.");
+            return;
+        }
+
+        const button =
+            document.querySelector(
+                '#realMatch button[onclick="findRealMatch()"]'
+            );
+
+        const originalText =
+            button?.textContent || "Analyze Players 🎾";
+
+        if (button) {
+
+            button.disabled = true;
+            button.textContent = "Loading...";
+        }
+
+        hideRealResults();
+
+        try {
+
+            console.log("Loading player 1:", player1Name);
+            console.log("Loading player 2:", player2Name);
+
+            const [player1, player2] =
+                await Promise.all([
+                    getPlayer(player1Name),
+                    getPlayer(player2Name)
+                ]);
+
+            console.log("Player 1 data:", player1);
+            console.log("Player 2 data:", player2);
+
+            renderPlayerCard(
+                player1,
+                "playerResult1"
+            );
+
+            renderPlayerCard(
+                player2,
+                "playerResult2"
+            );
+
+            renderPerformance(
+                player1,
+                player2
+            );
+
+            renderHeadToHead(
+                player1,
+                player2
+            );
+
+            renderAnalysis(
+                player1,
+                player2
+            );
+
+            document.getElementById("comparisonSection")
+                ?.classList.remove("hidden");
+
+            document.getElementById("performanceSection")
+                ?.classList.remove("hidden");
+
+            document.getElementById("h2hSection")
+                ?.classList.remove("hidden");
+
+            document.getElementById("analysisSection")
+                ?.classList.remove("hidden");
+
+            document.getElementById("recentMatchesSection")
+                ?.classList.remove("hidden");
+
+            const recentMatches =
+                document.getElementById("recentMatches");
+
+            if (recentMatches) {
+
+                recentMatches.innerHTML = `
+                    <div class="status">
+                        Recent match history is not connected yet.
+                    </div>
+                `;
+            }
+
+            document.getElementById("comparisonSection")
+                ?.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+        } catch (error) {
+
+            console.error(
+                "Player loading failed:",
+                error
+            );
+
+            const comparison =
+                document.getElementById(
+                    "comparisonSection"
+                );
+
+            if (comparison) {
+
+                comparison.classList.remove("hidden");
+
+                document.getElementById(
+                    "playerResult1"
+                ).innerHTML = `
+                    <div class="status error">
+                        <strong>
+                            Could not load player data.
+                        </strong>
+
+                        <br><br>
+
+                        ${escapeHtml(error.message)}
+                    </div>
+                `;
+
+                document.getElementById(
+                    "playerResult2"
+                ).innerHTML = `
+                    <div class="status error">
+                        The RapidAPI request failed.
+                    </div>
+                `;
+            }
+
+        } finally {
+
+            if (button) {
+
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+    };
+
+
+    // --------------------------------------------------
+    // MANUAL MATCH ANALYSIS
+    // --------------------------------------------------
+
+    window.analyzeMatch = function () {
+
+        const player1Name =
+            document.getElementById("player1")
+                ?.value.trim() || "Player 1";
+
+        const player2Name =
+            document.getElementById("player2")
+                ?.value.trim() || "Player 2";
+
+        const serve1 =
+            Number(document.getElementById("serve1")?.value);
+
+        const serve2 =
+            Number(document.getElementById("serve2")?.value);
+
+        const winners1 =
+            Number(document.getElementById("winners1")?.value);
+
+        const winners2 =
+            Number(document.getElementById("winners2")?.value);
+
+        const errors1 =
+            Number(document.getElementById("errors1")?.value);
+
+        const errors2 =
+            Number(document.getElementById("errors2")?.value);
+
+
+        if (
+            !Number.isFinite(serve1) ||
+            !Number.isFinite(serve2) ||
+            !Number.isFinite(winners1) ||
+            !Number.isFinite(winners2) ||
+            !Number.isFinite(errors1) ||
+            !Number.isFinite(errors2)
+        ) {
+
+            alert("Please enter all match statistics.");
+            return;
+        }
+
+
+        if (
+            serve1 < 0 ||
+            serve1 > 100 ||
+            serve2 < 0 ||
+            serve2 > 100
+        ) {
+
+            alert(
+                "First serve percentage must be between 0 and 100."
+            );
+
+            return;
+        }
+
+
+        document.getElementById("player1Name")
+            .textContent = player1Name;
+
+        document.getElementById("player2Name")
+            .textContent = player2Name;
+
+        document.getElementById("serveResult1")
+            .textContent = `${serve1}%`;
+
+        document.getElementById("serveResult2")
+            .textContent = `${serve2}%`;
+
+        document.getElementById("winnerResult1")
+            .textContent = winners1;
+
+        document.getElementById("winnerResult2")
+            .textContent = winners2;
+
+        document.getElementById("errorResult1")
+            .textContent = errors1;
+
+        document.getElementById("errorResult2")
+            .textContent = errors2;
+
+
+        const maxWinners =
+            Math.max(winners1, winners2, 1);
+
+        const maxErrors =
+            Math.max(errors1, errors2, 1);
+
+
+        const score1 =
+            (serve1 * 0.4) +
+            ((winners1 / maxWinners) * 100 * 0.4) +
+            ((1 - errors1 / (maxErrors + 1)) * 100 * 0.2);
+
+
+        const score2 =
+            (serve2 * 0.4) +
+            ((winners2 / maxWinners) * 100 * 0.4) +
+            ((1 - errors2 / (maxErrors + 1)) * 100 * 0.2);
+
+
+        let resultText;
+
+
+        if (Math.abs(score1 - score2) < 0.5) {
+
+            resultText =
+                `${player1Name} and ${player2Name} are very closely matched ` +
+                "based on the entered statistics.";
+
+        } else if (score1 > score2) {
+
+            resultText =
+                `${player1Name} has the stronger statistical indicator ` +
+                `(${score1.toFixed(1)} vs ${score2.toFixed(1)}).`;
+
+        } else {
+
+            resultText =
+                `${player2Name} has the stronger statistical indicator ` +
+                `(${score2.toFixed(1)} vs ${score1.toFixed(1)}).`;
+        }
+
+
+        const result =
+            document.getElementById("result");
+
+        if (result) {
+            result.textContent = resultText;
+        }
+
+
+        document.getElementById("results")
+            ?.classList.remove("hidden");
+
+
+        document.getElementById("results")
+            ?.scrollIntoView({
+                behavior: "smooth"
+            });
+    };
+
+
+    console.log("Tennis Match Analyzer JS loaded successfully.");
+
+});
