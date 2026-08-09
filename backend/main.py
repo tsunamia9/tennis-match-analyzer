@@ -1,16 +1,17 @@
 import os
-import httpx
+from pathlib import Path
 
+import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 app = FastAPI(
     title="Tennis Match Analyzer API",
     description="Backend for the Tennis Match Analyzer",
-    version="1.0.0"
+    version="1.0.0",
 )
 
-# Allow our frontend to communicate with the backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,14 +21,22 @@ app.add_middleware(
 )
 
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
-RAPIDAPI_HOST = "tennis-api-atp-wta-itf.p.rapidapi.com"
+
+RAPIDAPI_HOST = (
+    "tennis-api-atp-wta-itf.p.rapidapi.com"
+)
+
+BASE_DIR = (
+    Path(__file__).resolve().parent.parent
+)
 
 
 @app.get("/")
 def home():
     return {
-        "message": "Tennis Match Analyzer API is running 🎾",
-        "status": "online"
+        "message":
+            "Tennis Match Analyzer API is running 🎾",
+        "status": "online",
     }
 
 
@@ -35,35 +44,39 @@ def home():
 def health_check():
     return {
         "status": "healthy",
-        "service": "tennis-match-analyzer"
+        "service": "tennis-match-analyzer",
     }
 
 
 @app.get("/api/test")
 async def api_test():
+
     if not RAPIDAPI_KEY:
         raise HTTPException(
             status_code=500,
-            detail="RAPIDAPI_KEY is not configured"
+            detail="RAPIDAPI_KEY is not configured",
         )
 
     return {
         "status": "API key detected",
-        "message": "Backend is ready to connect to tennis data 🎾"
+        "message":
+            "Backend is ready to connect to tennis data 🎾",
     }
 
 
 @app.get("/api/player/{player_name}")
 async def get_player(player_name: str):
+
     if not RAPIDAPI_KEY:
         raise HTTPException(
             status_code=500,
-            detail="RAPIDAPI_KEY is not configured"
+            detail="RAPIDAPI_KEY is not configured",
         )
 
     url = (
         f"https://{RAPIDAPI_HOST}"
-        f"/tennis/v2/ms-api/profile/{player_name}"
+        f"/tennis/v2/ms-api/profile/"
+        f"{player_name}"
     )
 
     headers = {
@@ -73,22 +86,44 @@ async def get_player(player_name: str):
     }
 
     try:
-        async with httpx.AsyncClient(timeout=15) as client:
+
+        async with httpx.AsyncClient(
+            timeout=15
+        ) as client:
+
             response = await client.get(
                 url,
-                headers=headers
+                headers=headers,
             )
 
         if response.status_code != 200:
+
             raise HTTPException(
                 status_code=response.status_code,
-                detail=response.text
+                detail=response.text,
             )
 
         return response.json()
 
     except httpx.RequestError as error:
+
         raise HTTPException(
             status_code=500,
-            detail=f"Connection error: {str(error)}"
+            detail=f"Connection error: {str(error)}",
         )
+
+
+@app.get("/app")
+def frontend():
+
+    return FileResponse(
+        BASE_DIR / "index.html"
+    )
+
+
+@app.get("/script.js")
+def javascript():
+
+    return FileResponse(
+        BASE_DIR / "script.js"
+    )
