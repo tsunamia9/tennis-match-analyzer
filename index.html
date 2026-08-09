@@ -1,1010 +1,913 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Tennis Match Analyzer</title>
-
-  
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, #172554 0%, transparent 35%),
-        radial-gradient(circle at top right, #064e3b 0%, transparent 30%),
-        #070b14;
-      color: #f8fafc;
-      min-height: 100vh;
-      padding: 30px 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-    }
-
-    header {
-      text-align: center;
-      padding: 35px 20px 45px;
-    }
-
-    .logo {
-      font-size: 58px;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: 46px;
-      letter-spacing: -1px;
-      margin-bottom: 12px;
-    }
-
-    .subtitle {
-      color: #94a3b8;
-      font-size: 17px;
-    }
-
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 18px;
-      padding: 8px 15px;
-      border-radius: 30px;
-      background: #052e16;
-      color: #86efac;
-      border: 1px solid #166534;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 10px #22c55e;
-    }
-
-    .section {
-      background: rgba(15, 23, 42, 0.88);
-      border: 1px solid #1e293b;
-      border-radius: 22px;
-      padding: 30px;
-      margin-bottom: 25px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.18);
-    }
-
-    .section-title {
-      font-size: 25px;
-      margin-bottom: 25px;
-    }
-
-    .modes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
-      margin-bottom: 30px;
-    }
-
-    .mode-card {
-      background: linear-gradient(145deg, #111827, #0f172a);
-      border: 1px solid #1e293b;
-      border-radius: 20px;
-      padding: 32px;
-      text-align: center;
-      transition: 0.25s;
-    }
-
-    .mode-card:hover {
-      transform: translateY(-5px);
-      border-color: #22c55e;
-      box-shadow: 0 15px 35px rgba(34,197,94,0.08);
-    }
-
-    .mode-icon {
-      font-size: 44px;
-      margin-bottom: 15px;
-    }
-
-    .mode-card h2 {
-      margin-bottom: 10px;
-    }
-
-    .mode-card p {
-      color: #94a3b8;
-      line-height: 1.6;
-      margin-bottom: 22px;
-    }
-
-    button {
-      border: none;
-      border-radius: 11px;
-      background: #22c55e;
-      color: white;
-      padding: 13px 23px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    button:hover {
-      background: #16a34a;
-      transform: translateY(-2px);
-    }
-
-    .secondary-button {
-      background: #1e293b;
-    }
-
-    .secondary-button:hover {
-      background: #334155;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .players {
-      display: grid;
-      grid-template-columns: 1fr 90px 1fr;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .player-selection {
-      background: #0b1220;
-      border: 1px solid #1e293b;
-      border-radius: 18px;
-      padding: 25px;
-      text-align: center;
-    }
-
-    .player-image {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      margin: 0 auto 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(145deg, #1e293b, #111827);
-      font-size: 45px;
-      border: 3px solid #334155;
-    }
-
-    .player-selection h3 {
-      margin-bottom: 15px;
-    }
-
-    select,
-    input {
-      width: 100%;
-      padding: 13px;
-      border-radius: 11px;
-      border: 1px solid #334155;
-      background: #111827;
-      color: white;
-      font-size: 15px;
-    }
-
-    select:focus,
-    input:focus {
-      outline: none;
-      border-color: #22c55e;
-    }
-
-    .search-box {
-      margin-bottom: 18px;
-      position: relative;
-    }
-
-    .search-box input {
-      padding-left: 42px;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      top: 13px;
-      color: #64748b;
-    }
-
-    .vs {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      color: #22c55e;
-    }
-
-    .compare-button {
-      margin-top: 25px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .comparison-grid,
-    .performance-grid,
-    .manual-players {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 22px;
-    }
-
-    .player-result-card,
-    .performance-card,
-    .player-card {
-      background: linear-gradient(145deg, #0f172a, #0b1220);
-      border: 1px solid #1e293b;
-      border-radius: 20px;
-      padding: 25px;
-    }
-
-    .player-result-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .player-result-avatar {
-      width: 65px;
-      height: 65px;
-      border-radius: 50%;
-      background: #1e293b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-    }
-
-    .player-result-header h3 {
-      font-size: 22px;
-      margin-bottom: 4px;
-    }
-
-    .player-result-header p {
-      color: #94a3b8;
-    }
-
-    .rank-box {
-      background: #111827;
-      border-radius: 14px;
-      padding: 15px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .rank-box span {
-      color: #94a3b8;
-    }
-
-    .rank-box strong {
-      font-size: 28px;
-      color: #22c55e;
-    }
-
-    .data-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 13px 0;
-      border-bottom: 1px solid #1e293b;
-    }
-
-    .data-row span {
-      color: #94a3b8;
-    }
-
-    .data-row strong {
-      color: #f8fafc;
-    }
-
-    .form {
-      margin-top: 18px;
-    }
-
-    .form-title,
-    .score-label {
-      color: #94a3b8;
-      font-size: 13px;
-      margin-bottom: 9px;
-    }
-
-    .form-dots {
-      display: flex;
-      gap: 7px;
-    }
-
-    .form-dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .win {
-      background: #166534;
-      color: #bbf7d0;
-    }
-
-    .loss {
-      background: #7f1d1d;
-      color: #fecaca;
-    }
-
-    .performance-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .score {
-      font-size: 34px;
-      font-weight: bold;
-      color: #22c55e;
-    }
-
-    .bar-background {
-      width: 100%;
-      height: 12px;
-      background: #1e293b;
-      border-radius: 20px;
-      overflow: hidden;
-      margin: 12px 0;
-    }
-
-    .bar {
-      height: 100%;
-      border-radius: 20px;
-      background: linear-gradient(90deg, #16a34a, #4ade80);
-      transition: width 0.5s ease;
-    }
-
-    .h2h {
-      display: grid;
-      grid-template-columns: 1fr 140px 1fr;
-      align-items: center;
-      text-align: center;
-      gap: 20px;
-    }
-
-    .h2h-player h3 {
-      font-size: 21px;
-      margin-bottom: 8px;
-    }
-
-    .h2h-player p {
-      color: #94a3b8;
-    }
-
-    .h2h-score {
-      font-size: 42px;
-      font-weight: bold;
-    }
-
-    .h2h-label {
-      color: #64748b;
-      font-size: 13px;
-      margin-top: 5px;
-    }
-
-    .h2h-divider {
-      width: 100%;
-      height: 8px;
-      display: flex;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-top: 25px;
-    }
-
-    .h2h-left {
-      background: #22c55e;
-      transition: width 0.5s ease;
-    }
-
-    .h2h-right {
-      background: #334155;
-      transition: width 0.5s ease;
-    }
-
-    .matches {
-      display: grid;
-      gap: 10px;
-    }
-
-    .match-row {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 15px;
-      padding: 15px;
-      background: #0b1220;
-      border: 1px solid #1e293b;
-      border-radius: 13px;
-    }
-
-    .match-player-right {
-      text-align: right;
-    }
-
-    .match-score {
-      font-weight: bold;
-      color: #22c55e;
-    }
-
-    .match-date {
-      color: #64748b;
-      font-size: 12px;
-    }
-
-    .analysis-box {
-      background: linear-gradient(145deg, #052e16, #0f172a);
-      border: 1px solid #166534;
-      border-radius: 17px;
-      padding: 25px;
-    }
-
-    .analysis-box h3 {
-      color: #86efac;
-      margin-bottom: 12px;
-    }
-
-    .analysis-box p {
-      color: #cbd5e1;
-      line-height: 1.7;
-    }
-
-    .player-card h3 {
-      margin-bottom: 15px;
-    }
-
-    .player-card input {
-      margin-bottom: 12px;
-    }
-
-    .status {
-      padding: 12px;
-      border-radius: 10px;
-      background: #111827;
-      color: #94a3b8;
-      margin-top: 15px;
-    }
-
-    .error {
-      color: #fca5a5;
-      background: #450a0a;
-    }
-
-    .loading {
-      color: #86efac;
-    }
-
-    footer {
-      text-align: center;
-      color: #64748b;
-      margin: 45px 0 20px;
-    }
-
-    @media (max-width: 750px) {
-      body {
-        padding: 15px;
-      }
-
-      h1 {
-        font-size: 34px;
-      }
-
-      .modes,
-      .comparison-grid,
-      .performance-grid,
-      .manual-players {
-        grid-template-columns: 1fr;
-      }
-
-      .players {
-        grid-template-columns: 1fr;
-      }
-
-      .vs {
-        margin: -5px 0;
-      }
-
-      .h2h {
-        grid-template-columns: 1fr;
-      }
-
-      .match-row {
-        grid-template-columns: 1fr;
-        text-align: center;
-      }
-
-      .match-player-right {
-        text-align: center;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tennis Match Analyzer</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .container {
+            width: min(1200px, 92%);
+            margin: 0 auto;
+            padding: 40px 0 80px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        header h1 {
+            margin-bottom: 8px;
+            font-size: 42px;
+        }
+
+        header p {
+            color: #687386;
+            font-size: 17px;
+        }
+
+        .mode-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .primary {
+            background: #172033;
+            color: white;
+        }
+
+        .secondary {
+            background: white;
+            color: #172033;
+            border: 1px solid #d9dfeb;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 30px rgba(20, 35, 60, 0.07);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .section-title {
+            margin-top: 0;
+            font-size: 26px;
+        }
+
+        .section-subtitle {
+            color: #687386;
+        }
+
+        .players {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .player-selection {
+            border: 1px solid #e0e5ee;
+            border-radius: 18px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .player-avatar {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: #eef2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 34px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d9dfeb;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+        }
+
+        .vs {
+            text-align: center;
+            font-weight: 900;
+            font-size: 24px;
+        }
+
+        .analyze-button {
+            display: block;
+            margin: 25px auto 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .player-card {
+            border: 1px solid #e1e6ef;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .player-card h3 {
+            margin-top: 0;
+        }
+
+        .rank {
+            font-size: 38px;
+            font-weight: 900;
+            margin: 10px 0;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .metric {
+            margin: 20px 0;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .bar-background {
+            height: 12px;
+            background: #edf0f5;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            width: 0%;
+            background: #172033;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 15px;
+            border-bottom: 1px solid #edf0f5;
+            text-align: center;
+        }
+
+        .stats-table th:first-child,
+        .stats-table td:first-child {
+            text-align: left;
+        }
+
+        .winner {
+            font-weight: 900;
+        }
+
+        .big-score {
+            text-align: center;
+            font-size: 55px;
+            font-weight: 900;
+            margin: 15px 0;
+        }
+
+        .score-label {
+            text-align: center;
+            color: #687386;
+        }
+
+        .h2h {
+            display: grid;
+            grid-template-columns: 1fr 150px 1fr;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .h2h-score {
+            font-size: 45px;
+            font-weight: 900;
+        }
+
+        .status {
+            padding: 20px;
+            background: #f6f8fb;
+            border-radius: 12px;
+            color: #687386;
+        }
+
+        .analysis {
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .strengths {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .strength-box {
+            padding: 20px;
+            border-radius: 15px;
+            background: #f7f9fc;
+        }
+
+        .strength-box h3 {
+            margin-top: 0;
+        }
+
+        .manual-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .players,
+            .comparison-grid,
+            .cards,
+            .strengths,
+            .manual-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vs {
+                margin: -5px 0;
+            }
+
+            .h2h {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="container">
 
-<header>
-  <div class="logo">🎾</div>
+    <header>
+        <h1>🎾 Tennis Match Analyzer</h1>
+        <p>Compare professional tennis players and analyze match statistics.</p>
+    </header>
 
-  <h1>Tennis Match Analyzer</h1>
+    <div class="mode-buttons">
+        <button class="primary" onclick="showRealMatch()">
+            Compare Players
+        </button>
 
-  <p class="subtitle">
-    Compare players, analyze performance and explore tennis statistics
-  </p>
-
-  <div class="live-badge">
-    <span class="live-dot"></span>
-    LIVE TENNIS ANALYTICS
-  </div>
-</header>
-
-<div class="modes">
-
-  <div class="mode-card">
-    <div class="mode-icon">✍️</div>
-
-    <h2>Manual Analysis</h2>
-
-    <p>
-      Enter your own match statistics
-      and calculate a performance score.
-    </p>
-
-    <button onclick="showManual()">
-      Start Manual Analysis
-    </button>
-  </div>
-
-  <div class="mode-card">
-    <div class="mode-icon">🌐</div>
-
-    <h2>Player Comparison</h2>
-
-    <p>
-      Compare professional players using
-      live player profile data.
-    </p>
-
-    <button onclick="showRealMatch()">
-      Compare Players
-    </button>
-  </div>
-
-</div>
-
-<!-- PLAYER SELECTION -->
-
-<div id="realMatch" class="section">
-
-  <h2 class="section-title">
-    🎾 Choose Players
-  </h2>
-
-  <div class="search-box">
-    <span class="search-icon">🔍</span>
-    <input
-      id="playerSearch"
-      type="text"
-      placeholder="Search players..."
-      oninput="filterPlayers()"
-    >
-  </div>
-
-  <div class="players">
-
-    <div class="player-selection">
-
-      <div class="player-image">🎾</div>
-
-      <h3>Player 1</h3>
-
-      <select id="realPlayer1">
-      </select>
-
+        <button class="secondary" onclick="showManual()">
+            Manual Analysis
+        </button>
     </div>
 
-    <div class="vs">
-      VS
-    </div>
 
-    <div class="player-selection">
+    <!-- ========================================= -->
+    <!-- PLAYER COMPARISON -->
+    <!-- ========================================= -->
 
-      <div class="player-image">🎾</div>
+    <section id="realMatch" class="section">
 
-      <h3>Player 2</h3>
+        <h2 class="section-title">Compare Players</h2>
 
-      <select id="realPlayer2">
-      </select>
+        <p class="section-subtitle">
+            Select two professional players to compare their profiles,
+            rankings and matchup indicators.
+        </p>
 
-    </div>
+        <div class="players">
 
-  </div>
+            <div class="player-selection">
 
-  <button class="compare-button" onclick="findRealMatch()">
-    Analyze Match 🎾
-  </button>
+                <div class="player-avatar">🎾</div>
 
-</div>
+                <h3>Player 1</h3>
 
-<!-- PLAYER COMPARISON -->
+                <select id="realPlayer1"></select>
 
-<div id="comparisonSection" class="section hidden">
+            </div>
 
-  <h2 class="section-title">
-    ⚔️ Player Comparison
-  </h2>
+            <div class="vs">VS</div>
 
-  <div class="comparison-grid">
+            <div class="player-selection">
 
-    <div id="playerResult1" class="player-result-card">
-      Select a player to load data.
-    </div>
+                <div class="player-avatar">🎾</div>
 
-    <div id="playerResult2" class="player-result-card">
-      Select a player to load data.
-    </div>
+                <h3>Player 2</h3>
 
-  </div>
+                <select id="realPlayer2"></select>
 
-</div>
+            </div>
 
-<!-- PERFORMANCE -->
-
-<div id="performanceSection" class="section hidden">
-
-  <h2 class="section-title">
-    📈 Performance Overview
-  </h2>
-
-  <div class="performance-grid">
-
-    <div class="performance-card">
-
-      <div class="performance-header">
-        <h3 id="performanceName1">Player 1</h3>
-
-        <div id="score1" class="score">
-          --
-        </div>
-      </div>
-
-      <p class="score-label">
-        Profile Performance
-      </p>
-
-      <div class="bar-background">
-        <div id="bar1" class="bar" style="width:0%"></div>
-      </div>
-
-    </div>
-
-    <div class="performance-card">
-
-      <div class="performance-header">
-        <h3 id="performanceName2">Player 2</h3>
-
-        <div id="score2" class="score">
-          --
-        </div>
-      </div>
-
-      <p class="score-label">
-        Profile Performance
-      </p>
-
-      <div class="bar-background">
-        <div id="bar2" class="bar" style="width:0%"></div>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- HEAD TO HEAD -->
-
-<div id="h2hSection" class="section hidden">
-
-  <h2 class="section-title">
-    ⚔️ Head-to-Head
-  </h2>
-
-  <div class="h2h">
-
-    <div class="h2h-player">
-
-      <h3 id="h2hPlayer1">Player 1</h3>
-
-      <p id="h2hCountry1">--</p>
-
-      <div id="h2hWins1" class="h2h-score">
-        0
-      </div>
-
-      <div class="h2h-label">
-        Wins
-      </div>
-
-    </div>
-
-    <div>
-
-      <div id="h2hMatches"
-           style="font-size:20px;font-weight:bold;">
-        --
-      </div>
-
-      <div class="h2h-label">
-        Career meetings
-      </div>
-
-    </div>
-
-    <div class="h2h-player">
-
-      <h3 id="h2hPlayer2">Player 2</h3>
-
-      <p id="h2hCountry2">--</p>
-
-      <div id="h2hWins2" class="h2h-score">
-        0
-      </div>
-
-      <div class="h2h-label">
-        Wins
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="h2h-divider">
-
-    <div id="h2hLeft"
-         class="h2h-left"
-         style="width:50%">
-    </div>
-
-    <div id="h2hRight"
-         class="h2h-right"
-         style="width:50%">
-    </div>
-
-  </div>
-
-</div>
-
-<!-- RECENT MATCHES -->
-
-<div id="recentMatchesSection" class="section hidden">
-
-  <h2 class="section-title">
-    🏆 Recent Matches
-  </h2>
-
-  <div id="recentMatches" class="matches">
-  </div>
-
-</div>
-
-<!-- ANALYSIS -->
-
-<div id="analysisSection" class="section hidden">
-
-  <h2 class="section-title">
-    🧠 AI-Style Match Analysis
-  </h2>
-
-  <div class="analysis-box">
-
-    <h3>📊 Current Comparison</h3>
-
-    <p id="analysisText">
-      Loading analysis...
-    </p>
-
-  </div>
-
-</div>
-
-<!-- MANUAL -->
-
-<div id="manualAnalysis" class="section hidden">
-
-  <h2 class="section-title">
-    ✍️ Manual Match Analysis
-  </h2>
-
-  <div class="manual-players">
-
-    <div class="player-card">
-
-      <h3>Player 1</h3>
-
-      <input
-        id="player1"
-        type="text"
-        placeholder="Player name"
-      >
-
-      <input
-        id="serve1"
-        type="number"
-        min="0"
-        max="100"
-        placeholder="First serve %"
-      >
-
-      <input
-        id="winners1"
-        type="number"
-        min="0"
-        placeholder="Winners"
-      >
-
-      <input
-        id="errors1"
-        type="number"
-        min="0"
-        placeholder="Unforced errors"
-      >
-
-    </div>
-
-    <div class="player-card">
-
-      <h3>Player 2</h3>
-
-      <input
-        id="player2"
-        type="text"
-        placeholder="Player name"
-      >
-
-      <input
-        id="serve2"
-        type="number"
-        min="0"
-        max="100"
-        placeholder="First serve %"
-      >
-
-      <input
-        id="winners2"
-        type="number"
-        min="0"
-        placeholder="Winners"
-      >
-
-      <input
-        id="errors2"
-        type="number"
-        min="0"
-        placeholder="Unforced errors"
-      >
-
-    </div>
-
-  </div>
-
-  <button
-    style="display:block;margin:25px auto 0;"
-    onclick="analyzeMatch()"
-  >
-    Analyze Match 🎾
-  </button>
-
-</div>
-
-<!-- MANUAL RESULTS -->
-
-<div id="results" class="section hidden">
-
-  <h2 class="section-title">
-    📊 Manual Results
-  </h2>
-
-  <div class="comparison-grid">
-
-    <div class="player-result-card">
-
-      <div class="player-result-header">
-
-        <div class="player-result-avatar">
-          🎾
         </div>
 
-        <div>
-          <h3 id="player1Name">Player 1</h3>
-          <p>Manual statistics</p>
+        <button
+            class="primary analyze-button"
+            onclick="findRealMatch()"
+        >
+            Analyze Matchup 🎾
+        </button>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- PLAYER PROFILES -->
+    <!-- ========================================= -->
+
+    <section id="comparisonSection" class="section hidden">
+
+        <h2 class="section-title">Player Profiles</h2>
+
+        <div class="cards">
+
+            <div id="playerResult1" class="player-card">
+                Select a player.
+            </div>
+
+            <div id="playerResult2" class="player-card">
+                Select a player.
+            </div>
+
         </div>
 
-      </div>
+    </section>
 
-      <div class="data-row">
-        <span>First Serve</span>
-        <strong id="serveResult1">--</strong>
-      </div>
 
-      <div class="data-row">
-        <span>Winners</span>
-        <strong id="winnerResult1">--</strong>
-      </div>
+    <!-- ========================================= -->
+    <!-- OVERALL PERFORMANCE -->
+    <!-- ========================================= -->
 
-      <div class="data-row">
-        <span>Unforced Errors</span>
-        <strong id="errorResult1">--</strong>
-      </div>
+    <section id="performanceSection" class="section hidden">
 
-    </div>
+        <h2 class="section-title">📊 Overall Performance</h2>
 
-    <div class="player-result-card">
+        <div class="comparison-grid">
 
-      <div class="player-result-header">
+            <div>
+                <h3 id="performanceName1">Player 1</h3>
 
-        <div class="player-result-avatar">
-          🎾
+                <div id="score1" class="big-score">--</div>
+
+                <p class="score-label">
+                    Ranking-based performance indicator
+                </p>
+
+                <div class="bar-background">
+                    <div id="bar1" class="bar"></div>
+                </div>
+            </div>
+
+            <div>
+                <h3 id="performanceName2">Player 2</h3>
+
+                <div id="score2" class="big-score">--</div>
+
+                <p class="score-label">
+                    Ranking-based performance indicator
+                </p>
+
+                <div class="bar-background">
+                    <div id="bar2" class="bar"></div>
+                </div>
+            </div>
+
         </div>
 
-        <div>
-          <h3 id="player2Name">Player 2</h3>
-          <p>Manual statistics</p>
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- STAT COMPARISON -->
+    <!-- ========================================= -->
+
+    <section id="statsSection" class="section hidden">
+
+        <h2 class="section-title">📈 Player Statistics</h2>
+
+        <table class="stats-table">
+
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th id="statName1">Player 1</th>
+                    <th id="statName2">Player 2</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>ATP Ranking</td>
+                    <td id="rankCompare1">--</td>
+                    <td id="rankCompare2">--</td>
+                </tr>
+
+                <tr>
+                    <td>Country</td>
+                    <td id="countryCompare1">--</td>
+                    <td id="countryCompare2">--</td>
+                </tr>
+
+                <tr>
+                    <td>Playing Hand</td>
+                    <td id="handCompare1">--</td>
+                    <td id="handCompare2">--</td>
+                </tr>
+
+                <tr>
+                    <td>Birth Date</td>
+                    <td id="birthCompare1">--</td>
+                    <td id="birthCompare2">--</td>
+                </tr>
+
+                <tr>
+                    <td>Ranking Advantage</td>
+                    <td id="rankingAdvantage1">--</td>
+                    <td id="rankingAdvantage2">--</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- MATCHUP METRICS -->
+    <!-- ========================================= -->
+
+    <section id="matchupSection" class="section hidden">
+
+        <h2 class="section-title">⚡ Matchup Metrics</h2>
+
+        <div class="comparison-grid">
+
+            <div>
+
+                <h3 id="metricName1">Player 1</h3>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span>Ranking Strength</span>
+                        <strong id="rankingMetric1">--</strong>
+                    </div>
+
+                    <div class="bar-background">
+                        <div id="rankingBar1" class="bar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span>Profile Strength</span>
+                        <strong id="profileMetric1">--</strong>
+                    </div>
+
+                    <div class="bar-background">
+                        <div id="profileBar1" class="bar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span>Matchup Rating</span>
+                        <strong id="matchupMetric1">--</strong>
+                    </div>
+
+                    <div class="bar-background">
+                        <div id="matchupBar1" class="bar"></div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <h3 id="metricName2">Player 2</h3>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span>Ranking Strength</span>
+                        <strong id="rankingMetric2">--</strong>
+                    </div>
+
+                    <div class="bar-background">
+                        <div id="rankingBar2" class="bar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span>Profile Strength</span>
+                        <strong id="profileMetric2">--</strong>
+                    </div>
+
+                    <div class="bar-background">
+                        <div id="profileBar2" class="bar"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <div class="metric-header">
+                        <span>Matchup Rating</span>
+                        <strong id="matchupMetric2">--</strong>
+                    </div>
+
+                    <div class="bar-background">
+                        <div id="matchupBar2" class="bar"></div>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
-      </div>
+    </section>
 
-      <div class="data-row">
-        <span>First Serve</span>
-        <strong id="serveResult2">--</strong>
-      </div>
 
-      <div class="data-row">
-        <span>Winners</span>
-        <strong id="winnerResult2">--</strong>
-      </div>
+    <!-- ========================================= -->
+    <!-- HEAD TO HEAD -->
+    <!-- ========================================= -->
 
-      <div class="data-row">
-        <span>Unforced Errors</span>
-        <strong id="errorResult2">--</strong>
-      </div>
+    <section id="h2hSection" class="section hidden">
 
-    </div>
+        <h2 class="section-title">🤝 Head-to-Head</h2>
 
-  </div>
+        <div class="h2h">
 
-  <div class="analysis-box" style="margin-top:22px;">
-    <h3>🏆 Result</h3>
-    <p id="result">--</p>
-  </div>
+            <div>
+                <h3 id="h2hPlayer1">Player 1</h3>
+                <p id="h2hCountry1">--</p>
+                <div id="h2hWins1" class="h2h-score">--</div>
+                <small>Wins</small>
+            </div>
 
-</div>
+            <div>
+                <div id="h2hMatches" class="h2h-score">--</div>
+                <small>Career meetings</small>
+            </div>
 
-<footer>
-  🎾 Tennis Match Analyzer · Live Performance Dashboard
-</footer>
+            <div>
+                <h3 id="h2hPlayer2">Player 2</h3>
+                <p id="h2hCountry2">--</p>
+                <div id="h2hWins2" class="h2h-score">--</div>
+                <small>Wins</small>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="status">
+            <span id="h2hNote">
+                Head-to-head data will appear when a verified match-history
+                endpoint is connected.
+            </span>
+        </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- RECENT FORM -->
+    <!-- ========================================= -->
+
+    <section id="recentMatchesSection" class="section hidden">
+
+        <h2 class="section-title">🔥 Recent Form</h2>
+
+        <div class="comparison-grid">
+
+            <div class="status">
+                <h3 id="recentName1">Player 1</h3>
+
+                <p>
+                    Last 5 matches
+                </p>
+
+                <div id="recentForm1">
+                    Data pending API match-history access.
+                </div>
+            </div>
+
+            <div class="status">
+                <h3 id="recentName2">Player 2</h3>
+
+                <p>
+                    Last 5 matches
+                </p>
+
+                <div id="recentForm2">
+                    Data pending API match-history access.
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- STRENGTHS -->
+    <!-- ========================================= -->
+
+    <section id="strengthSection" class="section hidden">
+
+        <h2 class="section-title">💪 Strengths & Weaknesses</h2>
+
+        <div class="strengths">
+
+            <div class="strength-box">
+
+                <h3 id="strengthName1">Player 1</h3>
+
+                <p>
+                    🟢 <strong>Strength:</strong>
+                    Higher ranking position gives this player an advantage
+                    in the ranking-based comparison.
+                </p>
+
+                <p>
+                    🔴 <strong>Weakness:</strong>
+                    Additional match statistics are required for a deeper
+                    technical comparison.
+                </p>
+
+            </div>
+
+            <div class="strength-box">
+
+                <h3 id="strengthName2">Player 2</h3>
+
+                <p>
+                    🟢 <strong>Strength:</strong>
+                    Profile and ranking data are included in the comparison.
+                </p>
+
+                <p>
+                    🔴 <strong>Weakness:</strong>
+                    Serve, return and recent-form data require match statistics.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- ANALYSIS -->
+    <!-- ========================================= -->
+
+    <section id="analysisSection" class="section hidden">
+
+        <h2 class="section-title">🧠 Matchup Analysis</h2>
+
+        <div id="analysisText" class="analysis">
+            Loading analysis...
+        </div>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- MANUAL ANALYSIS -->
+    <!-- ========================================= -->
+
+    <section id="manualAnalysis" class="section hidden">
+
+        <h2 class="section-title">Manual Analysis</h2>
+
+        <p class="section-subtitle">
+            Enter match statistics manually.
+        </p>
+
+        <div class="manual-grid">
+
+            <div class="player-card">
+
+                <h3>Player 1</h3>
+
+                <input
+                    id="player1"
+                    type="text"
+                    placeholder="Player name"
+                >
+
+                <br><br>
+
+                <input
+                    id="serve1"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="First serve %"
+                >
+
+                <br><br>
+
+                <input
+                    id="winners1"
+                    type="number"
+                    min="0"
+                    placeholder="Winners"
+                >
+
+                <br><br>
+
+                <input
+                    id="errors1"
+                    type="number"
+                    min="0"
+                    placeholder="Unforced errors"
+                >
+
+            </div>
+
+
+            <div class="player-card">
+
+                <h3>Player 2</h3>
+
+                <input
+                    id="player2"
+                    type="text"
+                    placeholder="Player name"
+                >
+
+                <br><br>
+
+                <input
+                    id="serve2"
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="First serve %"
+                >
+
+                <br><br>
+
+                <input
+                    id="winners2"
+                    type="number"
+                    min="0"
+                    placeholder="Winners"
+                >
+
+                <br><br>
+
+                <input
+                    id="errors2"
+                    type="number"
+                    min="0"
+                    placeholder="Unforced errors"
+                >
+
+            </div>
+
+        </div>
+
+        <button
+            class="primary analyze-button"
+            onclick="analyzeMatch()"
+        >
+            Analyze Match 🎾
+        </button>
+
+    </section>
+
+
+    <!-- ========================================= -->
+    <!-- MANUAL RESULTS -->
+    <!-- ========================================= -->
+
+    <section id="results" class="section hidden">
+
+        <h2 class="section-title">Manual Match Results</h2>
+
+        <div class="cards">
+
+            <div class="player-card">
+
+                <h3 id="player1Name">Player 1</h3>
+
+                <div class="data-row">
+                    <span>First Serve</span>
+                    <strong id="serveResult1">--</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Winners</span>
+                    <strong id="winnerResult1">--</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Unforced Errors</span>
+                    <strong id="errorResult1">--</strong>
+                </div>
+
+            </div>
+
+
+            <div class="player-card">
+
+                <h3 id="player2Name">Player 2</h3>
+
+                <div class="data-row">
+                    <span>First Serve</span>
+                    <strong id="serveResult2">--</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Winners</span>
+                    <strong id="winnerResult2">--</strong>
+                </div>
+
+                <div class="data-row">
+                    <span>Unforced Errors</span>
+                    <strong id="errorResult2">--</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="status">
+            <strong>Result:</strong>
+
+            <p id="result">
+                --
+            </p>
+        </div>
+
+    </section>
 
 </div>
 
