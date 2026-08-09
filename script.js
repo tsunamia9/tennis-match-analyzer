@@ -494,6 +494,8 @@ const playerData = {
     form: ["W", "W", "L", "W", "W"]
   },
 
+  // Famous / popular players
+
   "Nick Kyrgios": {
     country: "Australia",
     flag: "🇦🇺",
@@ -690,7 +692,6 @@ function setupSearch(searchId, selectId) {
         name.includes(query) ? "" : "none";
     });
 
-    // Open dropdown automatically when searching
     if (query.length > 0) {
       select.focus();
     }
@@ -728,54 +729,6 @@ function renderForm(player, containerId) {
 
 
 // ============================================
-// UPDATE PLAYER CARD
-// ============================================
-
-function updatePlayerCard(player, number) {
-
-  document.getElementById(`avatar${number}`).textContent =
-    player.flag;
-
-  document.getElementById(`resultName${number}`).textContent =
-    getPlayerName(player);
-
-  document.getElementById(`country${number}`).textContent =
-    `${player.flag} ${player.country} · ATP`;
-
-  document.getElementById(`rank${number}`).textContent =
-    player.rank === "—"
-      ? "—"
-      : `#${player.rank}`;
-
-  document.getElementById(`score${number}`).textContent =
-    `${player.score}%`;
-
-  document.getElementById(`performanceResult${number}`).textContent =
-    `${player.score}%`;
-
-  document.getElementById(`serveResult${number}`).textContent =
-    `${player.serve}%`;
-
-  document.getElementById(`winnersResult${number}`).textContent =
-    player.winners;
-
-  document.getElementById(`errorsResult${number}`).textContent =
-    player.errors;
-
-  document.getElementById(`serveBar${number}`).style.width =
-    `${player.serve}%`;
-
-  document.getElementById(`winnersBar${number}`).style.width =
-    `${Math.min(player.winners * 2, 100)}%`;
-
-  document.getElementById(`errorsBar${number}`).style.width =
-    `${Math.min(player.errors * 3, 100)}%`;
-
-  renderForm(player, `form${number}`);
-}
-
-
-// ============================================
 // GET PLAYER NAME
 // ============================================
 
@@ -785,16 +738,116 @@ function getPlayerName(player) {
 
 
 // ============================================
+// UPDATE PLAYER CARD
+// ============================================
+
+function updatePlayerCard(player, number) {
+  const avatar = document.getElementById(`avatar${number}`);
+  const resultName = document.getElementById(`resultName${number}`);
+  const country = document.getElementById(`country${number}`);
+  const rank = document.getElementById(`rank${number}`);
+  const score = document.getElementById(`score${number}`);
+  const performanceResult =
+    document.getElementById(`performanceResult${number}`);
+  const serveResult =
+    document.getElementById(`serveResult${number}`);
+  const winnersResult =
+    document.getElementById(`winnersResult${number}`);
+  const errorsResult =
+    document.getElementById(`errorsResult${number}`);
+  const serveBar =
+    document.getElementById(`serveBar${number}`);
+  const winnersBar =
+    document.getElementById(`winnersBar${number}`);
+  const errorsBar =
+    document.getElementById(`errorsBar${number}`);
+
+  // Flag / avatar
+  if (avatar) {
+    avatar.textContent = player.flag;
+  }
+
+  // Player name WITH FLAG
+  if (resultName) {
+    resultName.textContent =
+      `${player.flag} ${getPlayerName(player)}`;
+  }
+
+  // Country WITH FLAG
+  if (country) {
+    country.textContent =
+      `${player.flag} ${player.country} · ATP`;
+  }
+
+  // Ranking
+  if (rank) {
+    rank.textContent =
+      player.rank === "—"
+        ? "—"
+        : `#${player.rank}`;
+  }
+
+  // Score
+  if (score) {
+    score.textContent =
+      `${player.score}%`;
+  }
+
+  if (performanceResult) {
+    performanceResult.textContent =
+      `${player.score}%`;
+  }
+
+  // Statistics
+  if (serveResult) {
+    serveResult.textContent =
+      `${player.serve}%`;
+  }
+
+  if (winnersResult) {
+    winnersResult.textContent =
+      player.winners;
+  }
+
+  if (errorsResult) {
+    errorsResult.textContent =
+      player.errors;
+  }
+
+  // Progress bars
+  if (serveBar) {
+    serveBar.style.width =
+      `${player.serve}%`;
+  }
+
+  if (winnersBar) {
+    winnersBar.style.width =
+      `${Math.min(player.winners * 2, 100)}%`;
+  }
+
+  if (errorsBar) {
+    errorsBar.style.width =
+      `${Math.min(player.errors * 3, 100)}%`;
+  }
+
+  // Recent form
+  renderForm(
+    player,
+    `form${number}`
+  );
+}
+
+
+// ============================================
 // COMPARISON
 // ============================================
 
 function comparePlayers() {
-
   const player1Name =
-    document.getElementById("player1").value;
+    document.getElementById("player1")?.value;
 
   const player2Name =
-    document.getElementById("player2").value;
+    document.getElementById("player2")?.value;
 
   if (!player1Name || !player2Name) {
     alert("Please select two players.");
@@ -816,8 +869,15 @@ function comparePlayers() {
     name: player2Name
   };
 
-  updatePlayerCard(player1, 1);
-  updatePlayerCard(player2, 2);
+  updatePlayerCard(
+    player1,
+    1
+  );
+
+  updatePlayerCard(
+    player2,
+    2
+  );
 
   updateComparison(
     player1,
@@ -827,12 +887,14 @@ function comparePlayers() {
   const results =
     document.getElementById("results");
 
-  results.classList.add("active");
+  if (results) {
+    results.classList.add("active");
 
-  results.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+    results.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }
 }
 
 
@@ -841,61 +903,97 @@ function comparePlayers() {
 // ============================================
 
 function updateComparison(player1, player2) {
+  const comparisonName1 =
+    document.getElementById("comparisonName1");
 
-  document.getElementById("comparisonName1").textContent =
-    player1.name;
+  const comparisonName2 =
+    document.getElementById("comparisonName2");
 
-  document.getElementById("comparisonName2").textContent =
-    player2.name;
+  const comparisonScore1 =
+    document.getElementById("comparisonScore1");
 
-  document.getElementById("comparisonScore1").textContent =
-    `${player1.score}%`;
+  const comparisonScore2 =
+    document.getElementById("comparisonScore2");
 
-  document.getElementById("comparisonScore2").textContent =
-    `${player2.score}%`;
+  const comparisonBar1 =
+    document.getElementById("comparisonBar1");
 
-  document.getElementById("comparisonBar1").style.width =
-    `${player1.score}%`;
-
-  document.getElementById("comparisonBar2").style.width =
-    `${player2.score}%`;
+  const comparisonBar2 =
+    document.getElementById("comparisonBar2");
 
   const winner =
     document.getElementById("winner");
 
-  if (player1.score > player2.score) {
 
-    winner.textContent =
+  // Player names WITH FLAGS
+  if (comparisonName1) {
+    comparisonName1.textContent =
       `${player1.flag} ${player1.name}`;
+  }
 
-  } else if (player2.score > player1.score) {
-
-    winner.textContent =
+  if (comparisonName2) {
+    comparisonName2.textContent =
       `${player2.flag} ${player2.name}`;
+  }
 
-  } else {
 
-    winner.textContent =
-      "🤝 Draw";
+  // Scores
+  if (comparisonScore1) {
+    comparisonScore1.textContent =
+      `${player1.score}%`;
+  }
 
+  if (comparisonScore2) {
+    comparisonScore2.textContent =
+      `${player2.score}%`;
+  }
+
+
+  // Score bars
+  if (comparisonBar1) {
+    comparisonBar1.style.width =
+      `${player1.score}%`;
+  }
+
+  if (comparisonBar2) {
+    comparisonBar2.style.width =
+      `${player2.score}%`;
+  }
+
+
+  // Winner
+  if (winner) {
+    if (player1.score > player2.score) {
+
+      winner.textContent =
+        `🏆 ${player1.flag} ${player1.name}`;
+
+    } else if (player2.score > player1.score) {
+
+      winner.textContent =
+        `🏆 ${player2.flag} ${player2.name}`;
+
+    } else {
+
+      winner.textContent =
+        "🤝 Draw";
+    }
   }
 }
 
 
 // ============================================
-// BUTTON
+// COMPARE BUTTON
 // ============================================
 
 const compareButton =
   document.getElementById("compareButton");
 
 if (compareButton) {
-
   compareButton.addEventListener(
     "click",
     comparePlayers
   );
-
 }
 
 
@@ -903,32 +1001,40 @@ if (compareButton) {
 // SEARCH INITIALIZATION
 // ============================================
 
-setupSearch("search1", "player1");
-setupSearch("search2", "player2");
+setupSearch(
+  "search1",
+  "player1"
+);
+
+setupSearch(
+  "search2",
+  "player2"
+);
 
 
 // ============================================
 // DEFAULT DATA
 // ============================================
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-  const player1 =
-    document.getElementById("player1");
+    const player1 =
+      document.getElementById("player1");
 
-  const player2 =
-    document.getElementById("player2");
+    const player2 =
+      document.getElementById("player2");
 
-  if (player1 && player2) {
+    if (player1 && player2) {
 
-    player1.value =
-      "Carlos Alcaraz";
+      player1.value =
+        "Carlos Alcaraz";
 
-    player2.value =
-      "Jannik Sinner";
+      player2.value =
+        "Jannik Sinner";
 
-    comparePlayers();
-
+      comparePlayers();
+    }
   }
-
-});
+);
