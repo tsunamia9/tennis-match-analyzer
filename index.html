@@ -1,917 +1,2953 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Tennis Match Analyzer</title>
+<title>Tennis Face-Off</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #172033;
-        }
+:root {
+  --bg: #050914;
+  --panel: #0c1424;
+  --panel-light: #111c30;
+  --border: rgba(148,163,184,.14);
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --green-soft: rgba(34,197,94,.12);
+  --blue: #38bdf8;
+  --gold: #fbbf24;
+  --red: #fb7185;
+}
 
-        .container {
-            width: min(1200px, 92%);
-            margin: 0 auto;
-            padding: 40px 0 80px;
-        }
+html {
+  scroll-behavior: smooth;
+}
 
-        header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
+body {
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(34,197,94,.09), transparent 30%),
+    radial-gradient(circle at 85% 20%, rgba(56,189,248,.07), transparent 30%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 25px 18px 60px;
+}
 
-        header h1 {
-            margin-bottom: 8px;
-            font-size: 42px;
-        }
+button,
+select,
+input {
+  font: inherit;
+}
 
-        header p {
-            color: #687386;
-            font-size: 17px;
-        }
+button {
+  cursor: pointer;
+}
 
-        .mode-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 35px;
-        }
+.container {
+  max-width: 1180px;
+  margin: auto;
+}
 
-        button {
-            border: none;
-            border-radius: 12px;
-            padding: 14px 24px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+/* HEADER */
 
-        .primary {
-            background: #172033;
-            color: white;
-        }
+.hero {
+  text-align: center;
+  padding: 35px 20px 45px;
+}
 
-        .secondary {
-            background: white;
-            color: #172033;
-            border: 1px solid #d9dfeb;
-        }
+.logo {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  background: linear-gradient(135deg,#22c55e,#15803d);
+  box-shadow: 0 15px 45px rgba(34,197,94,.25);
+  font-size: 44px;
+  transform: rotate(-4deg);
+}
 
-        .section {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 30px rgba(20, 35, 60, 0.07);
-        }
+.hero h1 {
+  font-size: clamp(38px,6vw,60px);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin-bottom: 16px;
+}
 
-        .hidden {
-            display: none !important;
-        }
+.hero h1 span {
+  color: var(--green);
+}
 
-        .section-title {
-            margin-top: 0;
-            font-size: 26px;
-        }
+.hero p {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
 
-        .section-subtitle {
-            color: #687386;
-        }
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 8px 15px;
+  border: 1px solid rgba(34,197,94,.25);
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: #86efac;
+  font-size: 13px;
+  font-weight: 700;
+}
 
-        .players {
-            display: grid;
-            grid-template-columns: 1fr 80px 1fr;
-            gap: 20px;
-            align-items: center;
-            margin-top: 25px;
-        }
+/* MODE BUTTONS */
 
-        .player-selection {
-            border: 1px solid #e0e5ee;
-            border-radius: 18px;
-            padding: 25px;
-            text-align: center;
-        }
+.mode-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
 
-        .player-avatar {
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            background: #eef2f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 34px;
-        }
+.mode-switcher button {
+  border: 1px solid var(--border);
+  background: #0b1322;
+  color: var(--muted);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 800;
+  transition: .2s;
+}
 
-        select,
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #d9dfeb;
-            border-radius: 10px;
-            font-size: 15px;
-            background: white;
-        }
+.mode-switcher button:hover,
+.mode-switcher button.active {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
 
-        .vs {
-            text-align: center;
-            font-weight: 900;
-            font-size: 24px;
-        }
+/* MAIN CARDS */
 
-        .analyze-button {
-            display: block;
-            margin: 25px auto 0;
-        }
+.card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15,23,42,.96),
+      rgba(8,15,28,.96)
+    );
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 25px;
+  box-shadow: 0 15px 45px rgba(0,0,0,.12);
+}
 
-        .cards {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+.selector-heading {
+  text-align: center;
+  margin-bottom: 28px;
+}
 
-        .player-card {
-            border: 1px solid #e1e6ef;
-            border-radius: 18px;
-            padding: 25px;
-        }
+.selector-heading h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
 
-        .player-card h3 {
-            margin-top: 0;
-        }
+.selector-heading p {
+  color: var(--muted);
+}
 
-        .rank {
-            font-size: 38px;
-            font-weight: 900;
-            margin: 10px 0;
-        }
+/* PLAYER SELECTOR */
 
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 13px 0;
-            border-bottom: 1px solid #edf0f5;
-        }
+.players {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: 20px;
+  align-items: center;
+}
 
-        .data-row:last-child {
-            border-bottom: none;
-        }
+.player-selection {
+  background: rgba(5,9,20,.65);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  text-align: center;
+  transition: .2s;
+}
 
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+.player-selection:hover {
+  border-color: rgba(34,197,94,.35);
+}
 
-        .metric {
-            margin: 20px 0;
-        }
+.player-image {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 17px;
+  border-radius: 50%;
+  background: linear-gradient(145deg,#17233a,#0b1322);
+  border: 3px solid rgba(34,197,94,.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+}
 
-        .metric-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
+.player-selection h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
 
-        .bar-background {
-            height: 12px;
-            background: #edf0f5;
-            border-radius: 20px;
-            overflow: hidden;
-        }
+.player-search,
+.player-select,
+.manual-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #26344c;
+  background: #0b1322;
+  color: white;
+  outline: none;
+  transition: .2s;
+}
 
-        .bar {
-            height: 100%;
-            width: 0%;
-            background: #172033;
-            border-radius: 20px;
-            transition: width 0.5s ease;
-        }
+.player-search {
+  margin-bottom: 10px;
+}
 
-        .stats-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.player-search:focus,
+.player-select:focus,
+.manual-input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(34,197,94,.1);
+}
 
-        .stats-table th,
-        .stats-table td {
-            padding: 15px;
-            border-bottom: 1px solid #edf0f5;
-            text-align: center;
-        }
+.player-select option,
+.player-select optgroup {
+  background: #0b1322;
+  color: white;
+}
 
-        .stats-table th:first-child,
-        .stats-table td:first-child {
-            text-align: left;
-        }
+.vs {
+  text-align: center;
+  font-size: 25px;
+  font-weight: 900;
+  color: var(--green);
+}
 
-        .winner {
-            font-weight: 900;
-        }
+.compare-button,
+.analyze-button {
+  display: block;
+  margin: 28px auto 0;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(135deg,var(--green),var(--green-dark));
+  color: white;
+  font-weight: 900;
+  box-shadow: 0 8px 25px rgba(34,197,94,.18);
+  transition: .2s;
+}
 
-        .big-score {
-            text-align: center;
-            font-size: 55px;
-            font-weight: 900;
-            margin: 15px 0;
-        }
+.compare-button:hover,
+.analyze-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(34,197,94,.28);
+}
 
-        .score-label {
-            text-align: center;
-            color: #687386;
-        }
+/* SECTION HEADINGS */
 
-        .h2h {
-            display: grid;
-            grid-template-columns: 1fr 150px 1fr;
-            align-items: center;
-            gap: 20px;
-            text-align: center;
-        }
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 28px;
+}
 
-        .h2h-score {
-            font-size: 45px;
-            font-weight: 900;
-        }
+.section-heading-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  background: var(--green-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
 
-        .status {
-            padding: 20px;
-            background: #f6f8fb;
-            border-radius: 12px;
-            color: #687386;
-        }
+.section-heading h2 {
+  font-size: 26px;
+}
 
-        .analysis {
-            font-size: 18px;
-            line-height: 1.7;
-        }
+.section-heading p {
+  color: var(--muted);
+  margin-top: 4px;
+}
 
-        .strengths {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+/* RESULTS */
 
-        .strength-box {
-            padding: 20px;
-            border-radius: 15px;
-            background: #f7f9fc;
-        }
+.player-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
 
-        .strength-box h3 {
-            margin-top: 0;
-        }
+.player-result-card {
+  background: rgba(5,9,20,.65);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 25px;
+}
 
-        .manual-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+.player-result-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
 
-        @media (max-width: 800px) {
-            .players,
-            .comparison-grid,
-            .cards,
-            .strengths,
-            .manual-grid {
-                grid-template-columns: 1fr;
-            }
+.player-result-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #17233a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
 
-            .vs {
-                margin: -5px 0;
-            }
+.player-result-header h3 {
+  font-size: 21px;
+  margin-bottom: 4px;
+}
 
-            .h2h {
-                grid-template-columns: 1fr;
-            }
+.player-result-header p {
+  color: var(--muted);
+}
 
-            header h1 {
-                font-size: 32px;
-            }
-        }
-    </style>
+.player-result-rank {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-radius: 13px;
+  background: #0b1322;
+  margin-bottom: 18px;
+}
+
+.player-result-rank span {
+  color: var(--muted);
+}
+
+.player-result-rank strong {
+  color: var(--green);
+  font-size: 24px;
+}
+
+/* FORM */
+
+.form-title {
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.form-dots {
+  display: flex;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.form-dot {
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.form-win {
+  background: rgba(34,197,94,.15);
+  color: #86efac;
+}
+
+.form-loss {
+  background: rgba(251,113,133,.12);
+  color: #fda4af;
+}
+
+/* PERFORMANCE */
+
+.performance-card {
+  background: #09111f;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.performance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.performance-header h3 {
+  font-size: 19px;
+}
+
+.score {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--green);
+}
+
+.performance-stat {
+  margin-bottom: 18px;
+}
+
+.stat-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.stat-label span {
+  color: var(--muted);
+}
+
+.stat-label strong {
+  color: white;
+}
+
+.bar-background {
+  width: 100%;
+  height: 10px;
+  background: #172238;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg,#16a34a,#4ade80);
+  box-shadow: 0 0 15px rgba(34,197,94,.35);
+  transition: width .6s ease;
+}
+
+.performance-score {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  margin-top: 5px;
+}
+
+.performance-score span {
+  color: var(--muted);
+}
+
+.performance-score strong {
+  color: var(--green);
+}
+
+/* COMPARISON */
+
+.comparison-card {
+  margin-top: 22px;
+  padding: 25px;
+  background: rgba(5,9,20,.65);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.comparison-card h3 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.comparison-card > p {
+  color: var(--muted);
+  margin-bottom: 25px;
+}
+
+.comparison-row {
+  margin-bottom: 20px;
+}
+
+.comparison-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.comparison-label strong {
+  color: var(--green);
+}
+
+.winner {
+  margin-top: 22px;
+  padding: 17px;
+  border-radius: 13px;
+  background: var(--green-soft);
+  border: 1px solid rgba(34,197,94,.15);
+  text-align: center;
+}
+
+.winner span {
+  color: var(--muted);
+}
+
+.winner strong {
+  color: #86efac;
+  margin-left: 6px;
+}
+
+/* MANUAL */
+
+.manual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.manual-player {
+  padding: 25px;
+  background: rgba(5,9,20,.65);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.manual-player h3 {
+  font-size: 21px;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 7px;
+}
+
+/* MANUAL RESULT TABLE */
+
+.manual-results {
+  display: none;
+}
+
+.manual-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.manual-table th,
+.manual-table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.manual-table th:first-child,
+.manual-table td:first-child {
+  text-align: left;
+  color: var(--muted);
+}
+
+.manual-table th {
+  color: white;
+}
+
+.manual-table td {
+  font-weight: 800;
+}
+
+/* NOTIFICATIONS */
+
+.message {
+  display: none;
+  margin-top: 18px;
+  padding: 13px 16px;
+  border-radius: 12px;
+  text-align: center;
+  background: rgba(251,113,133,.1);
+  border: 1px solid rgba(251,113,133,.2);
+  color: #fda4af;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* FOOTER */
+
+footer {
+  text-align: center;
+  color: #64748b;
+  margin-top: 45px;
+  padding-top: 25px;
+  border-top: 1px solid var(--border);
+  line-height: 1.7;
+}
+
+/* MOBILE */
+
+@media (max-width:750px) {
+
+  body {
+    padding: 12px 10px 40px;
+  }
+
+  .hero {
+    padding: 25px 10px 35px;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+  }
+
+  .players,
+  .player-results-grid,
+  .manual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vs {
+    margin: -7px 0;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .player-selection {
+    padding: 22px;
+  }
+
+  .mode-switcher {
+    flex-direction: column;
+  }
+
+  .mode-switcher button {
+    width: 100%;
+  }
+
+  .manual-table {
+    font-size: 13px;
+  }
+
+  .manual-table th,
+  .manual-table td {
+    padding: 11px 5px;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <header>
-        <h1>🎾 Tennis Match Analyzer</h1>
-        <p>Compare professional tennis players and analyze match statistics.</p>
-    </header>
+<!-- HEADER -->
 
-    <div class="mode-buttons">
-        <button class="primary" onclick="showRealMatch()">
-            Compare Players
-        </button>
+<header class="hero">
 
-        <button class="secondary" onclick="showManual()">
-            Manual Analysis
-        </button>
-    </div>
+  <div class="logo">🎾</div>
 
+  <h1>
+    Tennis <span>Face-Off</span>
+  </h1>
 
-    <!-- ========================================= -->
-    <!-- PLAYER COMPARISON -->
-    <!-- ========================================= -->
+  <p>
+    Compare the world's best tennis players
+  </p>
 
-    <section id="realMatch" class="section">
+  <div class="status">
+    🟢 Demo data mode · API independent
+  </div>
 
-        <h2 class="section-title">Compare Players</h2>
+</header>
 
-        <p class="section-subtitle">
-            Select two professional players to compare their profiles,
-            rankings and matchup indicators.
-        </p>
 
-        <div class="players">
+<!-- MODE SWITCH -->
 
-            <div class="player-selection">
+<div class="mode-switcher">
 
-                <div class="player-avatar">🎾</div>
+  <button
+    id="realModeButton"
+    class="active"
+    onclick="showMode('real')"
+  >
+    ⚔️ Player Comparison
+  </button>
 
-                <h3>Player 1</h3>
-
-                <select id="realPlayer1"></select>
-
-            </div>
-
-            <div class="vs">VS</div>
-
-            <div class="player-selection">
-
-                <div class="player-avatar">🎾</div>
-
-                <h3>Player 2</h3>
-
-                <select id="realPlayer2"></select>
-
-            </div>
-
-        </div>
-
-        <button
-            class="primary analyze-button"
-            onclick="findRealMatch()"
-        >
-            Analyze Matchup 🎾
-        </button>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- PLAYER PROFILES -->
-    <!-- ========================================= -->
-
-    <section id="comparisonSection" class="section hidden">
-
-        <h2 class="section-title">Player Profiles</h2>
-
-        <div class="cards">
-
-            <div id="playerResult1" class="player-card">
-                Select a player.
-            </div>
-
-            <div id="playerResult2" class="player-card">
-                Select a player.
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- OVERALL PERFORMANCE -->
-    <!-- ========================================= -->
-
-    <section id="performanceSection" class="section hidden">
-
-        <h2 class="section-title">📊 Overall Performance</h2>
-
-        <div class="comparison-grid">
-
-            <div>
-                <h3 id="performanceName1">Player 1</h3>
-
-                <div id="score1" class="big-score">--</div>
-
-                <p class="score-label">
-                    Ranking-based performance indicator
-                </p>
-
-                <div class="bar-background">
-                    <div id="bar1" class="bar"></div>
-                </div>
-            </div>
-
-            <div>
-                <h3 id="performanceName2">Player 2</h3>
-
-                <div id="score2" class="big-score">--</div>
-
-                <p class="score-label">
-                    Ranking-based performance indicator
-                </p>
-
-                <div class="bar-background">
-                    <div id="bar2" class="bar"></div>
-                </div>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- STAT COMPARISON -->
-    <!-- ========================================= -->
-
-    <section id="statsSection" class="section hidden">
-
-        <h2 class="section-title">📈 Player Statistics</h2>
-
-        <table class="stats-table">
-
-            <thead>
-                <tr>
-                    <th>Metric</th>
-                    <th id="statName1">Player 1</th>
-                    <th id="statName2">Player 2</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-                <tr>
-                    <td>ATP Ranking</td>
-                    <td id="rankCompare1">--</td>
-                    <td id="rankCompare2">--</td>
-                </tr>
-
-                <tr>
-                    <td>Country</td>
-                    <td id="countryCompare1">--</td>
-                    <td id="countryCompare2">--</td>
-                </tr>
-
-                <tr>
-                    <td>Playing Hand</td>
-                    <td id="handCompare1">--</td>
-                    <td id="handCompare2">--</td>
-                </tr>
-
-                <tr>
-                    <td>Birth Date</td>
-                    <td id="birthCompare1">--</td>
-                    <td id="birthCompare2">--</td>
-                </tr>
-
-                <tr>
-                    <td>Ranking Advantage</td>
-                    <td id="rankingAdvantage1">--</td>
-                    <td id="rankingAdvantage2">--</td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- MATCHUP METRICS -->
-    <!-- ========================================= -->
-
-    <section id="matchupSection" class="section hidden">
-
-        <h2 class="section-title">⚡ Matchup Metrics</h2>
-
-        <div class="comparison-grid">
-
-            <div>
-
-                <h3 id="metricName1">Player 1</h3>
-
-                <div class="metric">
-                    <div class="metric-header">
-                        <span>Ranking Strength</span>
-                        <strong id="rankingMetric1">--</strong>
-                    </div>
-
-                    <div class="bar-background">
-                        <div id="rankingBar1" class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-header">
-                        <span>Profile Strength</span>
-                        <strong id="profileMetric1">--</strong>
-                    </div>
-
-                    <div class="bar-background">
-                        <div id="profileBar1" class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-header">
-                        <span>Matchup Rating</span>
-                        <strong id="matchupMetric1">--</strong>
-                    </div>
-
-                    <div class="bar-background">
-                        <div id="matchupBar1" class="bar"></div>
-                    </div>
-                </div>
-
-            </div>
-
-
-            <div>
-
-                <h3 id="metricName2">Player 2</h3>
-
-                <div class="metric">
-                    <div class="metric-header">
-                        <span>Ranking Strength</span>
-                        <strong id="rankingMetric2">--</strong>
-                    </div>
-
-                    <div class="bar-background">
-                        <div id="rankingBar2" class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-header">
-                        <span>Profile Strength</span>
-                        <strong id="profileMetric2">--</strong>
-                    </div>
-
-                    <div class="bar-background">
-                        <div id="profileBar2" class="bar"></div>
-                    </div>
-                </div>
-
-                <div class="metric">
-                    <div class="metric-header">
-                        <span>Matchup Rating</span>
-                        <strong id="matchupMetric2">--</strong>
-                    </div>
-
-                    <div class="bar-background">
-                        <div id="matchupBar2" class="bar"></div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- HEAD TO HEAD -->
-    <!-- ========================================= -->
-
-    <section id="h2hSection" class="section hidden">
-
-        <h2 class="section-title">🤝 Head-to-Head</h2>
-
-        <div class="h2h">
-
-            <div>
-                <h3 id="h2hPlayer1">Player 1</h3>
-                <p id="h2hCountry1">--</p>
-                <div id="h2hWins1" class="h2h-score">--</div>
-                <small>Wins</small>
-            </div>
-
-            <div>
-                <div id="h2hMatches" class="h2h-score">--</div>
-                <small>Career meetings</small>
-            </div>
-
-            <div>
-                <h3 id="h2hPlayer2">Player 2</h3>
-                <p id="h2hCountry2">--</p>
-                <div id="h2hWins2" class="h2h-score">--</div>
-                <small>Wins</small>
-            </div>
-
-        </div>
-
-        <br>
-
-        <div class="status">
-            <span id="h2hNote">
-                Head-to-head data will appear when a verified match-history
-                endpoint is connected.
-            </span>
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- RECENT FORM -->
-    <!-- ========================================= -->
-
-    <section id="recentMatchesSection" class="section hidden">
-
-        <h2 class="section-title">🔥 Recent Form</h2>
-
-        <div class="comparison-grid">
-
-            <div class="status">
-                <h3 id="recentName1">Player 1</h3>
-
-                <p>
-                    Last 5 matches
-                </p>
-
-                <div id="recentForm1">
-                    Data pending API match-history access.
-                </div>
-            </div>
-
-            <div class="status">
-                <h3 id="recentName2">Player 2</h3>
-
-                <p>
-                    Last 5 matches
-                </p>
-
-                <div id="recentForm2">
-                    Data pending API match-history access.
-                </div>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- STRENGTHS -->
-    <!-- ========================================= -->
-
-    <section id="strengthSection" class="section hidden">
-
-        <h2 class="section-title">💪 Strengths & Weaknesses</h2>
-
-        <div class="strengths">
-
-            <div class="strength-box">
-
-                <h3 id="strengthName1">Player 1</h3>
-
-                <p>
-                    🟢 <strong>Strength:</strong>
-                    Higher ranking position gives this player an advantage
-                    in the ranking-based comparison.
-                </p>
-
-                <p>
-                    🔴 <strong>Weakness:</strong>
-                    Additional match statistics are required for a deeper
-                    technical comparison.
-                </p>
-
-            </div>
-
-            <div class="strength-box">
-
-                <h3 id="strengthName2">Player 2</h3>
-
-                <p>
-                    🟢 <strong>Strength:</strong>
-                    Profile and ranking data are included in the comparison.
-                </p>
-
-                <p>
-                    🔴 <strong>Weakness:</strong>
-                    Serve, return and recent-form data require match statistics.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- ANALYSIS -->
-    <!-- ========================================= -->
-
-    <section id="analysisSection" class="section hidden">
-
-        <h2 class="section-title">🧠 Matchup Analysis</h2>
-
-        <div id="analysisText" class="analysis">
-            Loading analysis...
-        </div>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- MANUAL ANALYSIS -->
-    <!-- ========================================= -->
-
-    <section id="manualAnalysis" class="section hidden">
-
-        <h2 class="section-title">Manual Analysis</h2>
-
-        <p class="section-subtitle">
-            Enter match statistics manually.
-        </p>
-
-        <div class="manual-grid">
-
-            <div class="player-card">
-
-                <h3>Player 1</h3>
-
-                <input
-                    id="player1"
-                    type="text"
-                    placeholder="Player name"
-                >
-
-                <br><br>
-
-                <input
-                    id="serve1"
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="First serve %"
-                >
-
-                <br><br>
-
-                <input
-                    id="winners1"
-                    type="number"
-                    min="0"
-                    placeholder="Winners"
-                >
-
-                <br><br>
-
-                <input
-                    id="errors1"
-                    type="number"
-                    min="0"
-                    placeholder="Unforced errors"
-                >
-
-            </div>
-
-
-            <div class="player-card">
-
-                <h3>Player 2</h3>
-
-                <input
-                    id="player2"
-                    type="text"
-                    placeholder="Player name"
-                >
-
-                <br><br>
-
-                <input
-                    id="serve2"
-                    type="number"
-                    min="0"
-                    max="100"
-                    placeholder="First serve %"
-                >
-
-                <br><br>
-
-                <input
-                    id="winners2"
-                    type="number"
-                    min="0"
-                    placeholder="Winners"
-                >
-
-                <br><br>
-
-                <input
-                    id="errors2"
-                    type="number"
-                    min="0"
-                    placeholder="Unforced errors"
-                >
-
-            </div>
-
-        </div>
-
-        <button
-            class="primary analyze-button"
-            onclick="analyzeMatch()"
-        >
-            Analyze Match 🎾
-        </button>
-
-    </section>
-
-
-    <!-- ========================================= -->
-    <!-- MANUAL RESULTS -->
-    <!-- ========================================= -->
-
-    <section id="results" class="section hidden">
-
-        <h2 class="section-title">Manual Match Results</h2>
-
-        <div class="cards">
-
-            <div class="player-card">
-
-                <h3 id="player1Name">Player 1</h3>
-
-                <div class="data-row">
-                    <span>First Serve</span>
-                    <strong id="serveResult1">--</strong>
-                </div>
-
-                <div class="data-row">
-                    <span>Winners</span>
-                    <strong id="winnerResult1">--</strong>
-                </div>
-
-                <div class="data-row">
-                    <span>Unforced Errors</span>
-                    <strong id="errorResult1">--</strong>
-                </div>
-
-            </div>
-
-
-            <div class="player-card">
-
-                <h3 id="player2Name">Player 2</h3>
-
-                <div class="data-row">
-                    <span>First Serve</span>
-                    <strong id="serveResult2">--</strong>
-                </div>
-
-                <div class="data-row">
-                    <span>Winners</span>
-                    <strong id="winnerResult2">--</strong>
-                </div>
-
-                <div class="data-row">
-                    <span>Unforced Errors</span>
-                    <strong id="errorResult2">--</strong>
-                </div>
-
-            </div>
-
-        </div>
-
-        <br>
-
-        <div class="status">
-            <strong>Result:</strong>
-
-            <p id="result">
-                --
-            </p>
-        </div>
-
-    </section>
+  <button
+    id="manualModeButton"
+    onclick="showMode('manual')"
+  >
+    ✍️ Manual Analysis
+  </button>
 
 </div>
 
-<script src="/script.js"></script>
+
+<!-- PLAYER SELECTOR -->
+
+<section
+  class="card"
+  id="realMode"
+>
+
+  <div class="selector-heading">
+
+    <h2>
+      Choose Your Players
+    </h2>
+
+    <p>
+      Select two players to compare their performance
+    </p>
+
+  </div>
+
+
+  <div class="players">
+
+
+    <!-- PLAYER 1 -->
+
+    <div class="player-selection">
+
+      <div
+        class="player-image"
+        id="selectAvatar1"
+      >
+        👤
+      </div>
+
+      <h3>
+        Player 1
+      </h3>
+
+      <input
+        class="player-search"
+        id="search1"
+        type="text"
+        placeholder="🔍 Search player..."
+        autocomplete="off"
+      >
+
+      <select
+        class="player-select"
+        id="player1"
+      >
+
+        <option value="">
+          Select a player
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="vs">
+      VS
+    </div>
+
+
+    <!-- PLAYER 2 -->
+
+    <div class="player-selection">
+
+      <div
+        class="player-image"
+        id="selectAvatar2"
+      >
+        👤
+      </div>
+
+      <h3>
+        Player 2
+      </h3>
+
+      <input
+        class="player-search"
+        id="search2"
+        type="text"
+        placeholder="🔍 Search player..."
+        autocomplete="off"
+      >
+
+      <select
+        class="player-select"
+        id="player2"
+      >
+
+        <option value="">
+          Select a player
+        </option>
+
+      </select>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="message"
+    id="selectionMessage"
+  ></div>
+
+
+  <button
+    class="compare-button"
+    id="compareButton"
+    type="button"
+  >
+    ⚔️ Compare Players
+  </button>
+
+</section>
+
+
+<!-- RESULTS -->
+
+<section
+  class="card"
+  id="results"
+>
+
+  <div class="section-heading">
+
+    <div class="section-heading-icon">
+      ⚔️
+    </div>
+
+    <div>
+
+      <h2>
+        Player Comparison
+      </h2>
+
+      <p>
+        Recent form and performance overview
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="player-results-grid">
+
+
+    <!-- RESULT PLAYER 1 -->
+
+    <div class="player-result-card">
+
+      <div class="player-result-header">
+
+        <div
+          class="player-result-avatar"
+          id="avatar1"
+        >
+          🇪🇸
+        </div>
+
+        <div>
+
+          <h3 id="resultName1">
+            Carlos Alcaraz
+          </h3>
+
+          <p id="country1">
+            Spain · ATP
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="player-result-rank">
+
+        <span>
+          World Ranking
+        </span>
+
+        <strong id="rank1">
+          #2
+        </strong>
+
+      </div>
+
+
+      <div class="form-title">
+        Recent Form
+      </div>
+
+      <div
+        class="form-dots"
+        id="form1"
+      ></div>
+
+
+      <div class="performance-card">
+
+        <div class="performance-header">
+
+          <h3>
+            Performance
+          </h3>
+
+          <div
+            class="score"
+            id="score1"
+          >
+            78%
+          </div>
+
+        </div>
+
+
+        <div class="performance-stat">
+
+          <div class="stat-label">
+
+            <span>
+              First Serve
+            </span>
+
+            <strong id="serveResult1">
+              68%
+            </strong>
+
+          </div>
+
+          <div class="bar-background">
+
+            <div
+              class="bar"
+              id="serveBar1"
+              style="width:68%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-stat">
+
+          <div class="stat-label">
+
+            <span>
+              Winners
+            </span>
+
+            <strong id="winnersResult1">
+              32
+            </strong>
+
+          </div>
+
+          <div class="bar-background">
+
+            <div
+              class="bar"
+              id="winnersBar1"
+              style="width:72%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-stat">
+
+          <div class="stat-label">
+
+            <span>
+              Unforced Errors
+            </span>
+
+            <strong id="errorsResult1">
+              18
+            </strong>
+
+          </div>
+
+          <div class="bar-background">
+
+            <div
+              class="bar"
+              id="errorsBar1"
+              style="width:54%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-score">
+
+          <span>
+            Performance Score
+          </span>
+
+          <strong id="performanceResult1">
+            78%
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RESULT PLAYER 2 -->
+
+    <div class="player-result-card">
+
+      <div class="player-result-header">
+
+        <div
+          class="player-result-avatar"
+          id="avatar2"
+        >
+          🇮🇹
+        </div>
+
+        <div>
+
+          <h3 id="resultName2">
+            Jannik Sinner
+          </h3>
+
+          <p id="country2">
+            Italy · ATP
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="player-result-rank">
+
+        <span>
+          World Ranking
+        </span>
+
+        <strong id="rank2">
+          #1
+        </strong>
+
+      </div>
+
+
+      <div class="form-title">
+        Recent Form
+      </div>
+
+      <div
+        class="form-dots"
+        id="form2"
+      ></div>
+
+
+      <div class="performance-card">
+
+        <div class="performance-header">
+
+          <h3>
+            Performance
+          </h3>
+
+          <div
+            class="score"
+            id="score2"
+          >
+            84%
+          </div>
+
+        </div>
+
+
+        <div class="performance-stat">
+
+          <div class="stat-label">
+
+            <span>
+              First Serve
+            </span>
+
+            <strong id="serveResult2">
+              72%
+            </strong>
+
+          </div>
+
+          <div class="bar-background">
+
+            <div
+              class="bar"
+              id="serveBar2"
+              style="width:72%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-stat">
+
+          <div class="stat-label">
+
+            <span>
+              Winners
+            </span>
+
+            <strong id="winnersResult2">
+              35
+            </strong>
+
+          </div>
+
+          <div class="bar-background">
+
+            <div
+              class="bar"
+              id="winnersBar2"
+              style="width:78%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-stat">
+
+          <div class="stat-label">
+
+            <span>
+              Unforced Errors
+            </span>
+
+            <strong id="errorsResult2">
+              15
+            </strong>
+
+          </div>
+
+          <div class="bar-background">
+
+            <div
+              class="bar"
+              id="errorsBar2"
+              style="width:45%"
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-score">
+
+          <span>
+            Performance Score
+          </span>
+
+          <strong id="performanceResult2">
+            84%
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- COMPARISON -->
+
+  <div class="comparison-card">
+
+    <h3>
+      🔥 Performance Comparison
+    </h3>
+
+    <p>
+      Current demo comparison
+    </p>
+
+
+    <div class="comparison-row">
+
+      <div class="comparison-label">
+
+        <span id="comparisonName1">
+          Carlos Alcaraz
+        </span>
+
+        <strong id="comparisonScore1">
+          78%
+        </strong>
+
+      </div>
+
+      <div class="bar-background">
+
+        <div
+          class="bar"
+          id="comparisonBar1"
+          style="width:78%"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+    <div class="comparison-row">
+
+      <div class="comparison-label">
+
+        <span id="comparisonName2">
+          Jannik Sinner
+        </span>
+
+        <strong id="comparisonScore2">
+          84%
+        </strong>
+
+      </div>
+
+      <div class="bar-background">
+
+        <div
+          class="bar"
+          id="comparisonBar2"
+          style="width:84%"
+        ></div>
+
+      </div>
+
+    </div>
+
+
+    <div class="winner">
+
+      <span>
+        Current advantage:
+      </span>
+
+      <strong id="winner">
+        🇮🇹 Jannik Sinner
+      </strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- MANUAL ANALYSIS -->
+
+<section
+  class="card hidden"
+  id="manualMode"
+>
+
+  <div class="section-heading">
+
+    <div class="section-heading-icon">
+      ✍️
+    </div>
+
+    <div>
+
+      <h2>
+        Manual Match Analysis
+      </h2>
+
+      <p>
+        Enter match statistics and calculate performance
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <div class="manual-grid">
+
+
+    <!-- MANUAL PLAYER 1 -->
+
+    <div class="manual-player">
+
+      <h3>
+        Player 1
+      </h3>
+
+      <div class="input-group">
+
+        <label>
+          Player name
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualName1"
+          type="text"
+          placeholder="e.g. Carlos Alcaraz"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          First Serve %
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualServe1"
+          type="number"
+          min="0"
+          max="100"
+          placeholder="0–100"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Winners
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualWinners1"
+          type="number"
+          min="0"
+          placeholder="Number of winners"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Unforced Errors
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualErrors1"
+          type="number"
+          min="0"
+          placeholder="Number of errors"
+        >
+
+      </div>
+
+    </div>
+
+
+    <!-- MANUAL PLAYER 2 -->
+
+    <div class="manual-player">
+
+      <h3>
+        Player 2
+      </h3>
+
+      <div class="input-group">
+
+        <label>
+          Player name
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualName2"
+          type="text"
+          placeholder="e.g. Jannik Sinner"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          First Serve %
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualServe2"
+          type="number"
+          min="0"
+          max="100"
+          placeholder="0–100"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Winners
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualWinners2"
+          type="number"
+          min="0"
+          placeholder="Number of winners"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Unforced Errors
+        </label>
+
+        <input
+          class="manual-input"
+          id="manualErrors2"
+          type="number"
+          min="0"
+          placeholder="Number of errors"
+        >
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div
+    class="message"
+    id="manualMessage"
+  ></div>
+
+
+  <button
+    class="analyze-button"
+    onclick="analyzeManualMatch()"
+  >
+    🎾 Analyze Match
+  </button>
+
+
+  <!-- MANUAL RESULTS -->
+
+  <div
+    class="manual-results"
+    id="manualResults"
+  >
+
+    <div class="comparison-card">
+
+      <h3>
+        📊 Match Statistics
+      </h3>
+
+      <p>
+        Calculated from your entered match data
+      </p>
+
+
+      <table class="manual-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Statistic
+            </th>
+
+            <th id="manualHeader1">
+              Player 1
+            </th>
+
+            <th id="manualHeader2">
+              Player 2
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr>
+
+            <td>
+              First Serve
+            </td>
+
+            <td id="manualServeResult1">
+              -
+            </td>
+
+            <td id="manualServeResult2">
+              -
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Winners
+            </td>
+
+            <td id="manualWinnerResult1">
+              -
+            </td>
+
+            <td id="manualWinnerResult2">
+              -
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Unforced Errors
+            </td>
+
+            <td id="manualErrorResult1">
+              -
+            </td>
+
+            <td id="manualErrorResult2">
+              -
+            </td>
+
+          </tr>
+
+          <tr>
+
+            <td>
+              Performance
+            </td>
+
+            <td
+              id="manualScore1"
+              style="color:#22c55e"
+            >
+              -
+            </td>
+
+            <td
+              id="manualScore2"
+              style="color:#22c55e"
+            >
+              -
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+
+      <div
+        class="winner"
+        id="manualWinner"
+      >
+        Analysis will appear here.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+
+  🎾 Tennis Face-Off
+
+  <br>
+
+  <span>
+    Demo version · API independent · Tennis performance analysis
+  </span>
+
+</footer>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   PLAYER DATABASE
+========================================================= */
+
+const players = {
+
+  "Jannik Sinner": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 1,
+    serve: 72,
+    winners: 35,
+    errors: 15,
+    score: 84,
+    form: ["W","W","W","L","W"]
+  },
+
+  "Carlos Alcaraz": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 2,
+    serve: 68,
+    winners: 32,
+    errors: 18,
+    score: 78,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Alexander Zverev": {
+    country: "Germany",
+    flag: "🇩🇪",
+    rank: 3,
+    serve: 71,
+    winners: 29,
+    errors: 17,
+    score: 80,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Novak Djokovic": {
+    country: "Serbia",
+    flag: "🇷🇸",
+    rank: 4,
+    serve: 69,
+    winners: 31,
+    errors: 16,
+    score: 82,
+    form: ["W","W","W","L","W"]
+  },
+
+  "Daniil Medvedev": {
+    country: "Russia",
+    flag: "🇷🇺",
+    rank: 5,
+    serve: 67,
+    winners: 28,
+    errors: 20,
+    score: 74,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Taylor Fritz": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 6,
+    serve: 73,
+    winners: 34,
+    errors: 21,
+    score: 77,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Jack Draper": {
+    country: "United Kingdom",
+    flag: "🇬🇧",
+    rank: 7,
+    serve: 70,
+    winners: 30,
+    errors: 19,
+    score: 75,
+    form: ["W","L","W","W","W"]
+  },
+
+  "Alex de Minaur": {
+    country: "Australia",
+    flag: "🇦🇺",
+    rank: 8,
+    serve: 66,
+    winners: 27,
+    errors: 14,
+    score: 79,
+    form: ["W","W","W","W","L"]
+  },
+
+  "Andrey Rublev": {
+    country: "Russia",
+    flag: "🇷🇺",
+    rank: 9,
+    serve: 68,
+    winners: 36,
+    errors: 25,
+    score: 72,
+    form: ["L","W","W","L","W"]
+  },
+
+  "Tommy Paul": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 10,
+    serve: 65,
+    winners: 29,
+    errors: 18,
+    score: 73,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Lorenzo Musetti": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 11,
+    serve: 64,
+    winners: 31,
+    errors: 22,
+    score: 71,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Ben Shelton": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 12,
+    serve: 74,
+    winners: 37,
+    errors: 24,
+    score: 76,
+    form: ["W","L","W","W","W"]
+  },
+
+  "Holger Rune": {
+    country: "Denmark",
+    flag: "🇩🇰",
+    rank: 13,
+    serve: 67,
+    winners: 30,
+    errors: 21,
+    score: 70,
+    form: ["L","W","W","L","W"]
+  },
+
+  "Casper Ruud": {
+    country: "Norway",
+    flag: "🇳🇴",
+    rank: 14,
+    serve: 69,
+    winners: 26,
+    errors: 15,
+    score: 75,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Karen Khachanov": {
+    country: "Russia",
+    flag: "🇷🇺",
+    rank: 15,
+    serve: 70,
+    winners: 33,
+    errors: 23,
+    score: 69,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Stefanos Tsitsipas": {
+    country: "Greece",
+    flag: "🇬🇷",
+    rank: 16,
+    serve: 68,
+    winners: 34,
+    errors: 24,
+    score: 70,
+    form: ["L","W","W","L","W"]
+  },
+
+  "Frances Tiafoe": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 17,
+    serve: 71,
+    winners: 35,
+    errors: 26,
+    score: 68,
+    form: ["W","L","L","W","W"]
+  },
+
+  "Sebastian Korda": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 18,
+    serve: 69,
+    winners: 31,
+    errors: 19,
+    score: 72,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Arthur Fils": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 19,
+    serve: 67,
+    winners: 32,
+    errors: 23,
+    score: 69,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Ugo Humbert": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 20,
+    serve: 68,
+    winners: 30,
+    errors: 21,
+    score: 70,
+    form: ["L","W","W","W","L"]
+  },
+
+  "Alejandro Davidovich Fokina": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 21,
+    serve: 65,
+    winners: 33,
+    errors: 27,
+    score: 66,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Francisco Cerundolo": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: 22,
+    serve: 64,
+    winners: 29,
+    errors: 20,
+    score: 70,
+    form: ["W","W","L","L","W"]
+  },
+
+  "Alexander Bublik": {
+    country: "Kazakhstan",
+    flag: "🇰🇿",
+    rank: 23,
+    serve: 75,
+    winners: 38,
+    errors: 28,
+    score: 67,
+    form: ["W","L","W","L","L"]
+  },
+
+  "Matteo Berrettini": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 24,
+    serve: 74,
+    winners: 36,
+    errors: 24,
+    score: 73,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Flavio Cobolli": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 25,
+    serve: 66,
+    winners: 28,
+    errors: 20,
+    score: 68,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Jiri Lehecka": {
+    country: "Czech Republic",
+    flag: "🇨🇿",
+    rank: 26,
+    serve: 69,
+    winners: 32,
+    errors: 22,
+    score: 70,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Alex Michelsen": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 27,
+    serve: 68,
+    winners: 31,
+    errors: 23,
+    score: 67,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Brandon Nakashima": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 28,
+    serve: 67,
+    winners: 27,
+    errors: 18,
+    score: 71,
+    form: ["W","W","W","L","L"]
+  },
+
+  "Tallon Griekspoor": {
+    country: "Netherlands",
+    flag: "🇳🇱",
+    rank: 29,
+    serve: 71,
+    winners: 34,
+    errors: 26,
+    score: 68,
+    form: ["L","W","L","W","W"]
+  },
+
+  "Jan-Lennard Struff": {
+    country: "Germany",
+    flag: "🇩🇪",
+    rank: 30,
+    serve: 72,
+    winners: 35,
+    errors: 27,
+    score: 67,
+    form: ["W","L","W","L","L"]
+  },
+
+  "Nuno Borges": {
+    country: "Portugal",
+    flag: "🇵🇹",
+    rank: 31,
+    serve: 65,
+    winners: 27,
+    errors: 19,
+    score: 69,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Sebastian Baez": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: 32,
+    serve: 63,
+    winners: 24,
+    errors: 17,
+    score: 68,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Tomas Machac": {
+    country: "Czech Republic",
+    flag: "🇨🇿",
+    rank: 33,
+    serve: 66,
+    winners: 30,
+    errors: 21,
+    score: 69,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Luciano Darderi": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 34,
+    serve: 64,
+    winners: 26,
+    errors: 23,
+    score: 65,
+    form: ["L","W","L","W","L"]
+  },
+
+  "Denis Shapovalov": {
+    country: "Canada",
+    flag: "🇨🇦",
+    rank: 35,
+    serve: 70,
+    winners: 37,
+    errors: 29,
+    score: 66,
+    form: ["W","L","L","W","W"]
+  },
+
+  "Jordan Thompson": {
+    country: "Australia",
+    flag: "🇦🇺",
+    rank: 36,
+    serve: 68,
+    winners: 28,
+    errors: 22,
+    score: 67,
+    form: ["L","W","W","L","W"]
+  },
+
+  "Arthur Rinderknech": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 37,
+    serve: 73,
+    winners: 34,
+    errors: 28,
+    score: 64,
+    form: ["W","L","L","W","L"]
+  },
+
+  "Alexandre Muller": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 38,
+    serve: 64,
+    winners: 25,
+    errors: 20,
+    score: 66,
+    form: ["W","W","L","L","W"]
+  },
+
+  "Mariano Navone": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: 39,
+    serve: 62,
+    winners: 23,
+    errors: 18,
+    score: 67,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Fabian Marozsan": {
+    country: "Hungary",
+    flag: "🇭🇺",
+    rank: 40,
+    serve: 66,
+    winners: 29,
+    errors: 24,
+    score: 65,
+    form: ["L","W","L","W","W"]
+  },
+
+  "Miomir Kecmanovic": {
+    country: "Serbia",
+    flag: "🇷🇸",
+    rank: 41,
+    serve: 65,
+    winners: 26,
+    errors: 19,
+    score: 68,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Pedro Martinez": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 42,
+    serve: 63,
+    winners: 24,
+    errors: 18,
+    score: 67,
+    form: ["L","W","W","L","W"]
+  },
+
+  "Roberto Bautista Agut": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 43,
+    serve: 64,
+    winners: 22,
+    errors: 14,
+    score: 70,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Gael Monfils": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 44,
+    serve: 67,
+    winners: 35,
+    errors: 27,
+    score: 65,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Grigor Dimitrov": {
+    country: "Bulgaria",
+    flag: "🇧🇬",
+    rank: 45,
+    serve: 68,
+    winners: 31,
+    errors: 20,
+    score: 73,
+    form: ["W","W","L","W","W"]
+  },
+
+  /* FAMOUS PLAYERS */
+
+  "Nick Kyrgios": {
+    country: "Australia",
+    flag: "🇦🇺",
+    rank: null,
+    serve: 75,
+    winners: 40,
+    errors: 30,
+    score: 67,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Rafael Nadal": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: null,
+    serve: 67,
+    winners: 35,
+    errors: 20,
+    score: 78,
+    form: ["W","W","W","L","W"]
+  },
+
+  "Roger Federer": {
+    country: "Switzerland",
+    flag: "🇨🇭",
+    rank: null,
+    serve: 72,
+    winners: 38,
+    errors: 16,
+    score: 90,
+    form: ["W","W","W","W","W"]
+  },
+
+  "Andy Murray": {
+    country: "United Kingdom",
+    flag: "🇬🇧",
+    rank: null,
+    serve: 65,
+    winners: 27,
+    errors: 17,
+    score: 79,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Stan Wawrinka": {
+    country: "Switzerland",
+    flag: "🇨🇭",
+    rank: null,
+    serve: 69,
+    winners: 39,
+    errors: 25,
+    score: 76,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Dominic Thiem": {
+    country: "Austria",
+    flag: "🇦🇹",
+    rank: null,
+    serve: 67,
+    winners: 40,
+    errors: 28,
+    score: 74,
+    form: ["W","L","W","L","W"]
+  },
+
+  "Kei Nishikori": {
+    country: "Japan",
+    flag: "🇯🇵",
+    rank: null,
+    serve: 64,
+    winners: 29,
+    errors: 17,
+    score: 76,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Marin Cilic": {
+    country: "Croatia",
+    flag: "🇭🇷",
+    rank: null,
+    serve: 71,
+    winners: 37,
+    errors: 26,
+    score: 73,
+    form: ["W","L","W","W","L"]
+  },
+
+  "Fabio Fognini": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: null,
+    serve: 62,
+    winners: 34,
+    errors: 29,
+    score: 65,
+    form: ["L","W","L","W","L"]
+  },
+
+  "Diego Schwartzman": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: null,
+    serve: 58,
+    winners: 25,
+    errors: 15,
+    score: 72,
+    form: ["W","L","W","W","L"]
+  },
+
+  "David Goffin": {
+    country: "Belgium",
+    flag: "🇧🇪",
+    rank: null,
+    serve: 63,
+    winners: 26,
+    errors: 16,
+    score: 71,
+    form: ["W","W","L","W","L"]
+  },
+
+  "Richard Gasquet": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: null,
+    serve: 65,
+    winners: 31,
+    errors: 22,
+    score: 68,
+    form: ["L","W","W","L","W"]
+  },
+
+  "Lucas Pouille": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: null,
+    serve: 66,
+    winners: 29,
+    errors: 24,
+    score: 65,
+    form: ["W","L","L","W","L"]
+  },
+
+  "Jo-Wilfried Tsonga": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: null,
+    serve: 71,
+    winners: 38,
+    errors: 27,
+    score: 76,
+    form: ["W","W","L","W","W"]
+  },
+
+  "Juan Martin Del Potro": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: null,
+    serve: 70,
+    winners: 42,
+    errors: 24,
+    score: 82,
+    form: ["W","W","W","L","W"]
+  }
+
+};
+
+
+/* =========================================================
+   PLAYER SELECTS
+========================================================= */
+
+const player1Select = document.getElementById("player1");
+const player2Select = document.getElementById("player2");
+
+function createPlayerOptions(select) {
+
+  select.innerHTML = `
+    <option value="">
+      Select a player
+    </option>
+  `;
+
+  const top = document.createElement("optgroup");
+
+  top.label = "🏆 Top Players";
+
+  const famous = document.createElement("optgroup");
+
+  famous.label = "⭐ Famous / Popular Players";
+
+  const names = Object.keys(players);
+
+  names.forEach(name => {
+
+    const option = document.createElement("option");
+
+    option.value = name;
+
+    option.textContent =
+      `${players[name].flag} ${name}`;
+
+    if (players[name].rank !== null) {
+
+      top.appendChild(option);
+
+    } else {
+
+      famous.appendChild(option);
+
+    }
+
+  });
+
+  select.appendChild(top);
+  select.appendChild(famous);
+}
+
+createPlayerOptions(player1Select);
+createPlayerOptions(player2Select);
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function setupSearch(searchId, selectId) {
+
+  const search = document.getElementById(searchId);
+  const select = document.getElementById(selectId);
+
+  search.addEventListener("input", () => {
+
+    const query = search.value
+      .toLowerCase()
+      .trim();
+
+    const current = select.value;
+
+    createPlayerOptions(select);
+
+    if (!query) {
+
+      select.value = current;
+      return;
+
+    }
+
+    let firstMatch = "";
+
+    Array.from(select.options).forEach(option => {
+
+      if (!option.value) return;
+
+      const match =
+        option.textContent
+          .toLowerCase()
+          .includes(query);
+
+      option.hidden = !match;
+
+      if (match && !firstMatch) {
+        firstMatch = option.value;
+      }
+
+    });
+
+    if (firstMatch) {
+      select.value = firstMatch;
+    }
+
+  });
+
+}
+
+setupSearch("search1","player1");
+setupSearch("search2","player2");
+
+
+/* =========================================================
+   SELECT AVATARS
+========================================================= */
+
+player1Select.addEventListener("change", () => {
+
+  const player = players[player1Select.value];
+
+  document.getElementById("selectAvatar1").textContent =
+    player ? player.flag : "👤";
+
+});
+
+player2Select.addEventListener("change", () => {
+
+  const player = players[player2Select.value];
+
+  document.getElementById("selectAvatar2").textContent =
+    player ? player.flag : "👤";
+
+});
+
+
+/* =========================================================
+   MODE SWITCH
+========================================================= */
+
+function showMode(mode) {
+
+  const realMode =
+    document.getElementById("realMode");
+
+  const manualMode =
+    document.getElementById("manualMode");
+
+  const realButton =
+    document.getElementById("realModeButton");
+
+  const manualButton =
+    document.getElementById("manualModeButton");
+
+  if (mode === "real") {
+
+    realMode.classList.remove("hidden");
+    manualMode.classList.add("hidden");
+
+    realButton.classList.add("active");
+    manualButton.classList.remove("active");
+
+  } else {
+
+    realMode.classList.add("hidden");
+    manualMode.classList.remove("hidden");
+
+    realButton.classList.remove("active");
+    manualButton.classList.add("active");
+
+    manualMode.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+/* =========================================================
+   FORM DOTS
+========================================================= */
+
+function renderForm(elementId, form) {
+
+  const container =
+    document.getElementById(elementId);
+
+  container.innerHTML = "";
+
+  form.forEach(result => {
+
+    const dot =
+      document.createElement("div");
+
+    dot.className =
+      "form-dot " +
+      (result === "W"
+        ? "form-win"
+        : "form-loss");
+
+    dot.textContent = result;
+
+    container.appendChild(dot);
+
+  });
+
+}
+
+
+/* =========================================================
+   UPDATE PLAYER RESULT
+========================================================= */
+
+function updatePlayerResult(index, name) {
+
+  const player = players[name];
+
+  document.getElementById(
+    `avatar${index}`
+  ).textContent = player.flag;
+
+  document.getElementById(
+    `resultName${index}`
+  ).textContent = name;
+
+  document.getElementById(
+    `country${index}`
+  ).textContent =
+    `${player.country} · ATP`;
+
+  document.getElementById(
+    `rank${index}`
+  ).textContent =
+    player.rank
+      ? `#${player.rank}`
+      : "Legend";
+
+  document.getElementById(
+    `score${index}`
+  ).textContent =
+    `${player.score}%`;
+
+  document.getElementById(
+    `performanceResult${index}`
+  ).textContent =
+    `${player.score}%`;
+
+  document.getElementById(
+    `serveResult${index}`
+  ).textContent =
+    `${player.serve}%`;
+
+  document.getElementById(
+    `winnersResult${index}`
+  ).textContent =
+    player.winners;
+
+  document.getElementById(
+    `errorsResult${index}`
+  ).textContent =
+    player.errors;
+
+  document.getElementById(
+    `serveBar${index}`
+  ).style.width =
+    `${player.serve}%`;
+
+  /*
+    Winners are visually normalized
+    against a 50-winner scale.
+  */
+
+  document.getElementById(
+    `winnersBar${index}`
+  ).style.width =
+    `${Math.min(player.winners * 2,100)}%`;
+
+  /*
+    Errors are displayed as an
+    error-level indicator.
+  */
+
+  document.getElementById(
+    `errorsBar${index}`
+  ).style.width =
+    `${Math.min(player.errors * 3,100)}%`;
+
+  renderForm(
+    `form${index}`,
+    player.form
+  );
+
+}
+
+
+/* =========================================================
+   COMPARE PLAYERS
+========================================================= */
+
+document
+  .getElementById("compareButton")
+  .addEventListener("click", comparePlayers);
+
+
+function comparePlayers() {
+
+  const name1 =
+    player1Select.value;
+
+  const name2 =
+    player2Select.value;
+
+  const message =
+    document.getElementById(
+      "selectionMessage"
+    );
+
+  message.style.display = "none";
+
+  if (!name1 || !name2) {
+
+    message.textContent =
+      "Please select both players.";
+
+    message.style.display =
+      "block";
+
+    return;
+  }
+
+  if (name1 === name2) {
+
+    message.textContent =
+      "Please choose two different players.";
+
+    message.style.display =
+      "block";
+
+    return;
+  }
+
+  updatePlayerResult(1,name1);
+  updatePlayerResult(2,name2);
+
+  const p1 = players[name1];
+  const p2 = players[name2];
+
+  document.getElementById(
+    "comparisonName1"
+  ).textContent = name1;
+
+  document.getElementById(
+    "comparisonName2"
+  ).textContent = name2;
+
+  document.getElementById(
+    "comparisonScore1"
+  ).textContent =
+    `${p1.score}%`;
+
+  document.getElementById(
+    "comparisonScore2"
+  ).textContent =
+    `${p2.score}%`;
+
+  document.getElementById(
+    "comparisonBar1"
+  ).style.width =
+    `${p1.score}%`;
+
+  document.getElementById(
+    "comparisonBar2"
+  ).style.width =
+    `${p2.score}%`;
+
+  const winner =
+    document.getElementById("winner");
+
+  if (p1.score > p2.score) {
+
+    winner.textContent =
+      `${p1.flag} ${name1}`;
+
+  } else if (p2.score > p1.score) {
+
+    winner.textContent =
+      `${p2.flag} ${name2}`;
+
+  } else {
+
+    winner.textContent =
+      "🤝 Even comparison";
+
+  }
+
+  document
+    .getElementById("results")
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+}
+
+
+/* =========================================================
+   MANUAL ANALYSIS
+========================================================= */
+
+function getNumber(id) {
+
+  return Number(
+    document.getElementById(id).value
+  );
+
+}
+
+
+function calculateManualScore(
+  serve,
+  winners,
+  errors
+) {
+
+  /*
+    Custom performance formula.
+
+    Serve:
+    0-100 points
+
+    Winners:
+    normalized against 50
+
+    Errors:
+    lower is better
+
+    Final:
+    40% serve
+    40% winners
+    20% error control
+  */
+
+  const serveScore =
+    Math.min(Math.max(serve,0),100);
+
+  const winnerScore =
+    Math.min(
+      Math.max(winners * 2,0),
+      100
+    );
+
+  const errorScore =
+    Math.max(
+      0,
+      100 - errors * 3
+    );
+
+  const score =
+    serveScore * 0.40 +
+    winnerScore * 0.40 +
+    errorScore * 0.20;
+
+  return Math.round(score);
+
+}
+
+
+function analyzeManualMatch() {
+
+  const name1 =
+    document.getElementById(
+      "manualName1"
+    ).value.trim() || "Player 1";
+
+  const name2 =
+    document.getElementById(
+      "manualName2"
+    ).value.trim() || "Player 2";
+
+  const serve1 =
+    getNumber("manualServe1");
+
+  const serve2 =
+    getNumber("manualServe2");
+
+  const winners1 =
+    getNumber("manualWinners1");
+
+  const winners2 =
+    getNumber("manualWinners2");
+
+  const errors1 =
+    getNumber("manualErrors1");
+
+  const errors2 =
+    getNumber("manualErrors2");
+
+  const message =
+    document.getElementById(
+      "manualMessage"
+    );
+
+  message.style.display = "none";
+
+  if (
+    serve1 < 0 ||
+    serve1 > 100 ||
+    serve2 < 0 ||
+    serve2 > 100 ||
+    winners1 < 0 ||
+    winners2 < 0 ||
+    errors1 < 0 ||
+    errors2 < 0
+  ) {
+
+    message.textContent =
+      "Please enter valid statistics.";
+
+    message.style.display =
+      "block";
+
+    return;
+  }
+
+  const score1 =
+    calculateManualScore(
+      serve1,
+      winners1,
+      errors1
+    );
+
+  const score2 =
+    calculateManualScore(
+      serve2,
+      winners2,
+      errors2
+    );
+
+
+  document.getElementById(
+    "manualHeader1"
+  ).textContent = name1;
+
+  document.getElementById(
+    "manualHeader2"
+  ).textContent = name2;
+
+  document.getElementById(
+    "manualServeResult1"
+  ).textContent =
+    `${serve1}%`;
+
+  document.getElementById(
+    "manualServeResult2"
+  ).textContent =
+    `${serve2}%`;
+
+  document.getElementById(
+    "manualWinnerResult1"
+  ).textContent =
+    winners1;
+
+  document.getElementById(
+    "manualWinnerResult2"
+  ).textContent =
+    winners2;
+
+  document.getElementById(
+    "manualErrorResult1"
+  ).textContent =
+    errors1;
+
+  document.getElementById(
+    "manualErrorResult2"
+  ).textContent =
+    errors2;
+
+  document.getElementById(
+    "manualScore1"
+  ).textContent =
+    `${score1}%`;
+
+  document.getElementById(
+    "manualScore2"
+  ).textContent =
+    `${score2}%`;
+
+
+  const winnerBox =
+    document.getElementById(
+      "manualWinner"
+    );
+
+  if (score1 > score2) {
+
+    winnerBox.innerHTML =
+      `🏆 <strong>${name1}</strong> has the higher performance score: ${score1}%`;
+
+  } else if (score2 > score1) {
+
+    winnerBox.innerHTML =
+      `🏆 <strong>${name2}</strong> has the higher performance score: ${score2}%`;
+
+  } else {
+
+    winnerBox.innerHTML =
+      `🤝 Both players have the same performance score: ${score1}%`;
+
+  }
+
+
+  document.getElementById(
+    "manualResults"
+  ).style.display = "block";
+
+}
+
+
+/* =========================================================
+   DEFAULT DEMO
+========================================================= */
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  player1Select.value =
+    "Carlos Alcaraz";
+
+  player2Select.value =
+    "Jannik Sinner";
+
+  document.getElementById(
+    "selectAvatar1"
+  ).textContent = "🇪🇸";
+
+  document.getElementById(
+    "selectAvatar2"
+  ).textContent = "🇮🇹";
+
+  comparePlayers();
+
+});
+
+</script>
 
 </body>
 </html>

@@ -1,825 +1,934 @@
-document.addEventListener("DOMContentLoaded", () => {
+const playerData = {
+  "Jannik Sinner": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 1,
+    serve: 72,
+    winners: 35,
+    errors: 15,
+    score: 84,
+    form: ["W", "W", "W", "L", "W"]
+  },
 
-    // --------------------------------------------------
-    // PLAYER LIST
-    // --------------------------------------------------
+  "Carlos Alcaraz": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 2,
+    serve: 68,
+    winners: 32,
+    errors: 18,
+    score: 78,
+    form: ["W", "W", "L", "W", "W"]
+  },
 
-    const players = [
-        "Jannik Sinner",
-        "Carlos Alcaraz",
-        "Novak Djokovic",
-        "Alexander Zverev",
-        "Daniil Medvedev",
-        "Taylor Fritz",
-        "Alex de Minaur",
-        "Ben Shelton",
-        "Felix Auger-Aliassime",
-        "Lorenzo Musetti",
-        "Andrey Rublev",
-        "Casper Ruud",
-        "Holger Rune",
-        "Jack Draper",
-        "Tommy Paul",
-        "Frances Tiafoe",
-        "Alejandro Davidovich Fokina",
-        "Cameron Norrie",
-        "Brandon Nakashima",
-        "Sebastian Korda"
-    ];
+  "Alexander Zverev": {
+    country: "Germany",
+    flag: "🇩🇪",
+    rank: 3,
+    serve: 70,
+    winners: 30,
+    errors: 20,
+    score: 75,
+    form: ["W", "L", "W", "W", "L"]
+  },
 
-    const select1 = document.getElementById("realPlayer1");
-    const select2 = document.getElementById("realPlayer2");
+  "Novak Djokovic": {
+    country: "Serbia",
+    flag: "🇷🇸",
+    rank: 4,
+    serve: 69,
+    winners: 28,
+    errors: 16,
+    score: 82,
+    form: ["W", "W", "W", "W", "L"]
+  },
 
-    if (!select1 || !select2) {
-        console.error("Player dropdowns not found.");
+  "Daniil Medvedev": {
+    country: "Russia",
+    flag: "🇷🇺",
+    rank: 5,
+    serve: 71,
+    winners: 27,
+    errors: 19,
+    score: 74,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Taylor Fritz": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 6,
+    serve: 73,
+    winners: 31,
+    errors: 21,
+    score: 76,
+    form: ["W", "W", "L", "W", "W"]
+  },
+
+  "Jack Draper": {
+    country: "United Kingdom",
+    flag: "🇬🇧",
+    rank: 7,
+    serve: 67,
+    winners: 29,
+    errors: 22,
+    score: 71,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Alex de Minaur": {
+    country: "Australia",
+    flag: "🇦🇺",
+    rank: 8,
+    serve: 66,
+    winners: 25,
+    errors: 17,
+    score: 73,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Andrey Rublev": {
+    country: "Russia",
+    flag: "🇷🇺",
+    rank: 9,
+    serve: 68,
+    winners: 34,
+    errors: 24,
+    score: 70,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Tommy Paul": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 10,
+    serve: 65,
+    winners: 27,
+    errors: 18,
+    score: 72,
+    form: ["W", "W", "W", "L", "W"]
+  },
+
+  "Lorenzo Musetti": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 11,
+    serve: 64,
+    winners: 26,
+    errors: 19,
+    score: 69,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Ben Shelton": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 12,
+    serve: 75,
+    winners: 33,
+    errors: 25,
+    score: 74,
+    form: ["W", "W", "L", "W", "W"]
+  },
+
+  "Holger Rune": {
+    country: "Denmark",
+    flag: "🇩🇰",
+    rank: 13,
+    serve: 67,
+    winners: 29,
+    errors: 21,
+    score: 70,
+    form: ["L", "W", "W", "W", "L"]
+  },
+
+  "Casper Ruud": {
+    country: "Norway",
+    flag: "🇳🇴",
+    rank: 14,
+    serve: 68,
+    winners: 24,
+    errors: 16,
+    score: 71,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Karen Khachanov": {
+    country: "Russia",
+    flag: "🇷🇺",
+    rank: 15,
+    serve: 69,
+    winners: 30,
+    errors: 22,
+    score: 68,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Stefanos Tsitsipas": {
+    country: "Greece",
+    flag: "🇬🇷",
+    rank: 16,
+    serve: 70,
+    winners: 31,
+    errors: 23,
+    score: 72,
+    form: ["W", "W", "L", "L", "W"]
+  },
+
+  "Frances Tiafoe": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 17,
+    serve: 71,
+    winners: 28,
+    errors: 24,
+    score: 69,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Sebastian Korda": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 18,
+    serve: 69,
+    winners: 27,
+    errors: 20,
+    score: 70,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Arthur Fils": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 19,
+    serve: 66,
+    winners: 29,
+    errors: 23,
+    score: 67,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Ugo Humbert": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 20,
+    serve: 68,
+    winners: 28,
+    errors: 21,
+    score: 69,
+    form: ["W", "W", "L", "L", "W"]
+  },
+
+  "Alejandro Davidovich Fokina": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 21,
+    serve: 64,
+    winners: 26,
+    errors: 25,
+    score: 65,
+    form: ["L", "W", "L", "W", "L"]
+  },
+
+  "Francisco Cerundolo": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: 22,
+    serve: 67,
+    winners: 27,
+    errors: 20,
+    score: 70,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Alexander Bublik": {
+    country: "Kazakhstan",
+    flag: "🇰🇿",
+    rank: 23,
+    serve: 72,
+    winners: 36,
+    errors: 29,
+    score: 68,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Matteo Berrettini": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 24,
+    serve: 75,
+    winners: 34,
+    errors: 22,
+    score: 73,
+    form: ["W", "W", "L", "W", "W"]
+  },
+
+  "Flavio Cobolli": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 25,
+    serve: 65,
+    winners: 25,
+    errors: 19,
+    score: 67,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Jiri Lehecka": {
+    country: "Czech Republic",
+    flag: "🇨🇿",
+    rank: 26,
+    serve: 68,
+    winners: 29,
+    errors: 22,
+    score: 69,
+    form: ["W", "W", "L", "L", "W"]
+  },
+
+  "Alex Michelsen": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 27,
+    serve: 70,
+    winners: 28,
+    errors: 23,
+    score: 68,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Brandon Nakashima": {
+    country: "USA",
+    flag: "🇺🇸",
+    rank: 28,
+    serve: 69,
+    winners: 26,
+    errors: 18,
+    score: 71,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Tallon Griekspoor": {
+    country: "Netherlands",
+    flag: "🇳🇱",
+    rank: 29,
+    serve: 71,
+    winners: 30,
+    errors: 24,
+    score: 68,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Jan-Lennard Struff": {
+    country: "Germany",
+    flag: "🇩🇪",
+    rank: 30,
+    serve: 72,
+    winners: 31,
+    errors: 25,
+    score: 67,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Nuno Borges": {
+    country: "Portugal",
+    flag: "🇵🇹",
+    rank: 31,
+    serve: 64,
+    winners: 24,
+    errors: 18,
+    score: 66,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Sebastian Baez": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: 32,
+    serve: 63,
+    winners: 23,
+    errors: 17,
+    score: 68,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Tomas Machac": {
+    country: "Czech Republic",
+    flag: "🇨🇿",
+    rank: 33,
+    serve: 67,
+    winners: 27,
+    errors: 21,
+    score: 68,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Luciano Darderi": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: 34,
+    serve: 65,
+    winners: 24,
+    errors: 20,
+    score: 65,
+    form: ["W", "L", "L", "W", "W"]
+  },
+
+  "Denis Shapovalov": {
+    country: "Canada",
+    flag: "🇨🇦",
+    rank: 35,
+    serve: 69,
+    winners: 32,
+    errors: 27,
+    score: 67,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Jordan Thompson": {
+    country: "Australia",
+    flag: "🇦🇺",
+    rank: 36,
+    serve: 67,
+    winners: 26,
+    errors: 22,
+    score: 66,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Arthur Rinderknech": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 37,
+    serve: 73,
+    winners: 30,
+    errors: 26,
+    score: 65,
+    form: ["W", "L", "W", "L", "L"]
+  },
+
+  "Alexandre Muller": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 38,
+    serve: 64,
+    winners: 23,
+    errors: 19,
+    score: 65,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Mariano Navone": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: 39,
+    serve: 62,
+    winners: 22,
+    errors: 18,
+    score: 64,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Fabian Marozsan": {
+    country: "Hungary",
+    flag: "🇭🇺",
+    rank: 40,
+    serve: 66,
+    winners: 25,
+    errors: 21,
+    score: 66,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Miomir Kecmanovic": {
+    country: "Serbia",
+    flag: "🇷🇸",
+    rank: 41,
+    serve: 65,
+    winners: 24,
+    errors: 20,
+    score: 65,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Pedro Martinez": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 42,
+    serve: 63,
+    winners: 22,
+    errors: 17,
+    score: 64,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Roberto Bautista Agut": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: 43,
+    serve: 65,
+    winners: 23,
+    errors: 16,
+    score: 67,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Gael Monfils": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: 44,
+    serve: 68,
+    winners: 28,
+    errors: 23,
+    score: 68,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Grigor Dimitrov": {
+    country: "Bulgaria",
+    flag: "🇧🇬",
+    rank: 45,
+    serve: 67,
+    winners: 29,
+    errors: 20,
+    score: 72,
+    form: ["W", "W", "L", "W", "W"]
+  },
+
+  "Nick Kyrgios": {
+    country: "Australia",
+    flag: "🇦🇺",
+    rank: "—",
+    serve: 72,
+    winners: 34,
+    errors: 27,
+    score: 70,
+    form: ["W", "L", "W", "L", "W"]
+  },
+
+  "Rafael Nadal": {
+    country: "Spain",
+    flag: "🇪🇸",
+    rank: "—",
+    serve: 65,
+    winners: 30,
+    errors: 21,
+    score: 82,
+    form: ["W", "W", "W", "L", "W"]
+  },
+
+  "Roger Federer": {
+    country: "Switzerland",
+    flag: "🇨🇭",
+    rank: "—",
+    serve: 68,
+    winners: 31,
+    errors: 18,
+    score: 90,
+    form: ["W", "W", "W", "W", "W"]
+  },
+
+  "Andy Murray": {
+    country: "United Kingdom",
+    flag: "🇬🇧",
+    rank: "—",
+    serve: 64,
+    winners: 25,
+    errors: 20,
+    score: 79,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Stan Wawrinka": {
+    country: "Switzerland",
+    flag: "🇨🇭",
+    rank: "—",
+    serve: 67,
+    winners: 32,
+    errors: 24,
+    score: 78,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Dominic Thiem": {
+    country: "Austria",
+    flag: "🇦🇹",
+    rank: "—",
+    serve: 66,
+    winners: 34,
+    errors: 26,
+    score: 80,
+    form: ["W", "L", "W", "W", "W"]
+  },
+
+  "Kei Nishikori": {
+    country: "Japan",
+    flag: "🇯🇵",
+    rank: "—",
+    serve: 62,
+    winners: 26,
+    errors: 17,
+    score: 76,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "Marin Cilic": {
+    country: "Croatia",
+    flag: "🇭🇷",
+    rank: "—",
+    serve: 71,
+    winners: 33,
+    errors: 25,
+    score: 77,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Fabio Fognini": {
+    country: "Italy",
+    flag: "🇮🇹",
+    rank: "—",
+    serve: 63,
+    winners: 29,
+    errors: 24,
+    score: 73,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Diego Schwartzman": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: "—",
+    serve: 59,
+    winners: 22,
+    errors: 14,
+    score: 75,
+    form: ["W", "W", "L", "W", "L"]
+  },
+
+  "David Goffin": {
+    country: "Belgium",
+    flag: "🇧🇪",
+    rank: "—",
+    serve: 64,
+    winners: 24,
+    errors: 16,
+    score: 72,
+    form: ["W", "L", "W", "W", "L"]
+  },
+
+  "Richard Gasquet": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: "—",
+    serve: 65,
+    winners: 28,
+    errors: 20,
+    score: 74,
+    form: ["W", "W", "L", "L", "W"]
+  },
+
+  "Lucas Pouille": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: "—",
+    serve: 67,
+    winners: 27,
+    errors: 22,
+    score: 69,
+    form: ["L", "W", "W", "L", "W"]
+  },
+
+  "Jo-Wilfried Tsonga": {
+    country: "France",
+    flag: "🇫🇷",
+    rank: "—",
+    serve: 72,
+    winners: 35,
+    errors: 26,
+    score: 80,
+    form: ["W", "W", "W", "L", "W"]
+  },
+
+  "Juan Martin Del Potro": {
+    country: "Argentina",
+    flag: "🇦🇷",
+    rank: "—",
+    serve: 74,
+    winners: 38,
+    errors: 24,
+    score: 84,
+    form: ["W", "W", "L", "W", "W"]
+  }
+};
+
+
+// ============================================
+// SEARCH FUNCTIONALITY
+// ============================================
+
+function setupSearch(searchId, selectId) {
+  const search = document.getElementById(searchId);
+  const select = document.getElementById(selectId);
+
+  if (!search || !select) return;
+
+  search.addEventListener("input", function () {
+    const query = this.value.toLowerCase().trim();
+
+    const options = Array.from(
+      select.querySelectorAll("option")
+    );
+
+    options.forEach(option => {
+      if (!option.value) {
+        option.style.display = "";
         return;
+      }
+
+      const name = option.value.toLowerCase();
+
+      option.style.display =
+        name.includes(query) ? "" : "none";
+    });
+
+    // Open dropdown automatically when searching
+    if (query.length > 0) {
+      select.focus();
+    }
+  });
+}
+
+
+// ============================================
+// FORM DOTS
+// ============================================
+
+function renderForm(player, containerId) {
+  const container = document.getElementById(containerId);
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  player.form.forEach(result => {
+    const dot = document.createElement("span");
+
+    dot.classList.add("form-dot");
+
+    if (result === "W") {
+      dot.classList.add("win");
+      dot.textContent = "W";
+    } else {
+      dot.classList.add("loss");
+      dot.textContent = "L";
     }
 
+    container.appendChild(dot);
+  });
+}
 
-    // --------------------------------------------------
-    // POPULATE DROPDOWNS
-    // --------------------------------------------------
 
-    function populatePlayers(list = players) {
+// ============================================
+// UPDATE PLAYER CARD
+// ============================================
 
-        select1.innerHTML = "";
-        select2.innerHTML = "";
+function updatePlayerCard(player, number) {
 
-        list.forEach(player => {
+  document.getElementById(`avatar${number}`).textContent =
+    player.flag;
 
-            const option1 = document.createElement("option");
-            option1.value = player;
-            option1.textContent = player;
+  document.getElementById(`resultName${number}`).textContent =
+    getPlayerName(player);
 
-            const option2 = document.createElement("option");
-            option2.value = player;
-            option2.textContent = player;
+  document.getElementById(`country${number}`).textContent =
+    `${player.flag} ${player.country} · ATP`;
 
-            select1.appendChild(option1);
-            select2.appendChild(option2);
-        });
+  document.getElementById(`rank${number}`).textContent =
+    player.rank === "—"
+      ? "—"
+      : `#${player.rank}`;
 
-        if (list.includes("Carlos Alcaraz")) {
-            select1.value = "Carlos Alcaraz";
-        }
+  document.getElementById(`score${number}`).textContent =
+    `${player.score}%`;
 
-        if (list.includes("Jannik Sinner")) {
-            select2.value = "Jannik Sinner";
-        }
-    }
+  document.getElementById(`performanceResult${number}`).textContent =
+    `${player.score}%`;
 
-    populatePlayers();
+  document.getElementById(`serveResult${number}`).textContent =
+    `${player.serve}%`;
 
-    console.log("Players loaded:", players.length);
+  document.getElementById(`winnersResult${number}`).textContent =
+    player.winners;
 
+  document.getElementById(`errorsResult${number}`).textContent =
+    player.errors;
 
-    // --------------------------------------------------
-    // MODE SWITCHING
-    // --------------------------------------------------
+  document.getElementById(`serveBar${number}`).style.width =
+    `${player.serve}%`;
 
-    window.showManual = function () {
+  document.getElementById(`winnersBar${number}`).style.width =
+    `${Math.min(player.winners * 2, 100)}%`;
 
-        document.getElementById("manualAnalysis")?.classList.remove("hidden");
+  document.getElementById(`errorsBar${number}`).style.width =
+    `${Math.min(player.errors * 3, 100)}%`;
 
-        document.getElementById("realMatch")?.classList.add("hidden");
-        document.getElementById("comparisonSection")?.classList.add("hidden");
-        document.getElementById("performanceSection")?.classList.add("hidden");
-        document.getElementById("h2hSection")?.classList.add("hidden");
-        document.getElementById("recentMatchesSection")?.classList.add("hidden");
-        document.getElementById("analysisSection")?.classList.add("hidden");
-        document.getElementById("results")?.classList.add("hidden");
+  renderForm(player, `form${number}`);
+}
 
-        document.getElementById("manualAnalysis")?.scrollIntoView({
-            behavior: "smooth"
-        });
-    };
 
+// ============================================
+// GET PLAYER NAME
+// ============================================
 
-    window.showRealMatch = function () {
+function getPlayerName(player) {
+  return player.name || player._name || "";
+}
 
-        document.getElementById("realMatch")?.classList.remove("hidden");
 
-        document.getElementById("manualAnalysis")?.classList.add("hidden");
-        document.getElementById("results")?.classList.add("hidden");
+// ============================================
+// COMPARISON
+// ============================================
 
-        document.getElementById("realMatch")?.scrollIntoView({
-            behavior: "smooth"
-        });
-    };
+function comparePlayers() {
 
+  const player1Name =
+    document.getElementById("player1").value;
 
-    // --------------------------------------------------
-    // PLAYER SEARCH
-    // --------------------------------------------------
+  const player2Name =
+    document.getElementById("player2").value;
 
-    const playerSearch = document.getElementById("playerSearch");
+  if (!player1Name || !player2Name) {
+    alert("Please select two players.");
+    return;
+  }
 
-    if (playerSearch) {
+  if (player1Name === player2Name) {
+    alert("Please select two different players.");
+    return;
+  }
 
-        playerSearch.addEventListener("input", () => {
+  const player1 = {
+    ...playerData[player1Name],
+    name: player1Name
+  };
 
-            const search = playerSearch.value
-                .toLowerCase()
-                .trim();
+  const player2 = {
+    ...playerData[player2Name],
+    name: player2Name
+  };
 
-            const filteredPlayers = players.filter(player =>
-                player.toLowerCase().includes(search)
-            );
+  updatePlayerCard(player1, 1);
+  updatePlayerCard(player2, 2);
 
-            populatePlayers(filteredPlayers);
-        });
-    }
+  updateComparison(
+    player1,
+    player2
+  );
 
+  const results =
+    document.getElementById("results");
 
-    // --------------------------------------------------
-    // API REQUEST
-    // --------------------------------------------------
+  results.classList.add("active");
 
-    async function getPlayer(playerName) {
+  results.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
 
-        const encodedName = encodeURIComponent(playerName);
 
-        const response = await fetch(
-            `/api/player/${encodedName}`
-        );
+// ============================================
+// UPDATE COMPARISON
+// ============================================
 
-        if (!response.ok) {
+function updateComparison(player1, player2) {
 
-            let message = "Failed to load player.";
+  document.getElementById("comparisonName1").textContent =
+    player1.name;
 
-            try {
-                const errorData = await response.json();
+  document.getElementById("comparisonName2").textContent =
+    player2.name;
 
-                if (errorData.detail) {
-                    message = errorData.detail;
-                }
+  document.getElementById("comparisonScore1").textContent =
+    `${player1.score}%`;
 
-            } catch {
-                // Ignore JSON error
-            }
+  document.getElementById("comparisonScore2").textContent =
+    `${player2.score}%`;
 
-            throw new Error(message);
-        }
+  document.getElementById("comparisonBar1").style.width =
+    `${player1.score}%`;
 
-        return await response.json();
-    }
+  document.getElementById("comparisonBar2").style.width =
+    `${player2.score}%`;
 
+  const winner =
+    document.getElementById("winner");
 
-    // --------------------------------------------------
-    // HELPERS
-    // --------------------------------------------------
+  if (player1.score > player2.score) {
 
-    function getRank(player) {
+    winner.textContent =
+      `${player1.flag} ${player1.name}`;
 
-        if (
-            player.rank === null ||
-            player.rank === undefined ||
-            player.rank === ""
-        ) {
-            return "N/A";
-        }
+  } else if (player2.score > player1.score) {
 
-        return player.rank;
-    }
+    winner.textContent =
+      `${player2.flag} ${player2.name}`;
 
+  } else {
 
-    function getCountry(player) {
-        return player.country || "Unknown";
-    }
+    winner.textContent =
+      "🤝 Draw";
 
+  }
+}
 
-    function getHand(player) {
-        return player.hand || "Unknown";
-    }
 
+// ============================================
+// BUTTON
+// ============================================
 
-    function getBirthDate(player) {
-        return player.birthDate || "Unknown";
-    }
+const compareButton =
+  document.getElementById("compareButton");
 
+if (compareButton) {
 
-    function escapeHtml(value) {
+  compareButton.addEventListener(
+    "click",
+    comparePlayers
+  );
 
-        return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
+}
 
 
-    // --------------------------------------------------
-    // PLAYER CARD
-    // --------------------------------------------------
+// ============================================
+// SEARCH INITIALIZATION
+// ============================================
 
-    function renderPlayerCard(player, elementId) {
+setupSearch("search1", "player1");
+setupSearch("search2", "player2");
 
-        const container = document.getElementById(elementId);
 
-        if (!container) {
-            return;
-        }
+// ============================================
+// DEFAULT DATA
+// ============================================
 
-        container.innerHTML = `
+window.addEventListener("DOMContentLoaded", () => {
 
-            <div class="player-result-header">
+  const player1 =
+    document.getElementById("player1");
 
-                <div class="player-result-avatar">
-                    🎾
-                </div>
+  const player2 =
+    document.getElementById("player2");
 
-                <div>
-                    <h3>
-                        ${escapeHtml(player.name)}
-                    </h3>
+  if (player1 && player2) {
 
-                    <p>
-                        Professional player profile
-                    </p>
-                </div>
+    player1.value =
+      "Carlos Alcaraz";
 
-            </div>
+    player2.value =
+      "Jannik Sinner";
 
-            <div class="rank-box">
+    comparePlayers();
 
-                <span>
-                    ATP Ranking
-                </span>
-
-                <strong>
-                    #${escapeHtml(String(getRank(player)))}
-                </strong>
-
-            </div>
-
-            <div class="data-row">
-
-                <span>
-                    Country
-                </span>
-
-                <strong>
-                    ${escapeHtml(getCountry(player))}
-                </strong>
-
-            </div>
-
-            <div class="data-row">
-
-                <span>
-                    Playing Hand
-                </span>
-
-                <strong>
-                    ${escapeHtml(getHand(player))}
-                </strong>
-
-            </div>
-
-            <div class="data-row">
-
-                <span>
-                    Birth Date
-                </span>
-
-                <strong>
-                    ${escapeHtml(getBirthDate(player))}
-                </strong>
-
-            </div>
-        `;
-    }
-
-
-    // --------------------------------------------------
-    // PERFORMANCE
-    // --------------------------------------------------
-
-    function calculatePerformance(rank1, rank2) {
-
-        const r1 = Number(rank1);
-        const r2 = Number(rank2);
-
-        if (!Number.isFinite(r1) || !Number.isFinite(r2)) {
-            return {
-                score1: 50,
-                score2: 50
-            };
-        }
-
-        const total = r1 + r2;
-
-        if (total <= 0) {
-            return {
-                score1: 50,
-                score2: 50
-            };
-        }
-
-        return {
-            score1: Math.round((r2 / total) * 100),
-            score2: Math.round((r1 / total) * 100)
-        };
-    }
-
-
-    function renderPerformance(player1, player2) {
-
-        const name1 = document.getElementById("performanceName1");
-        const name2 = document.getElementById("performanceName2");
-
-        const score1 = document.getElementById("score1");
-        const score2 = document.getElementById("score2");
-
-        const bar1 = document.getElementById("bar1");
-        const bar2 = document.getElementById("bar2");
-
-        const note = document.getElementById("performanceNote");
-
-        if (!name1 || !name2 || !score1 || !score2) {
-            return;
-        }
-
-        const performance = calculatePerformance(
-            player1.rank,
-            player2.rank
-        );
-
-        name1.textContent = player1.name;
-        name2.textContent = player2.name;
-
-        score1.textContent = `${performance.score1}%`;
-        score2.textContent = `${performance.score2}%`;
-
-        if (bar1) {
-            bar1.style.width = `${performance.score1}%`;
-        }
-
-        if (bar2) {
-            bar2.style.width = `${performance.score2}%`;
-        }
-
-        if (note) {
-
-            if (
-                Number.isFinite(Number(player1.rank)) &&
-                Number.isFinite(Number(player2.rank))
-            ) {
-
-                note.textContent =
-                    "The comparison is based on current ATP ranking positions.";
-
-            } else {
-
-                note.textContent =
-                    "Ranking data was not available for both players.";
-            }
-        }
-    }
-
-
-    // --------------------------------------------------
-    // HEAD TO HEAD
-    // --------------------------------------------------
-
-    function renderHeadToHead(player1, player2) {
-
-        const name1 = document.getElementById("h2hPlayer1");
-        const name2 = document.getElementById("h2hPlayer2");
-
-        const country1 = document.getElementById("h2hCountry1");
-        const country2 = document.getElementById("h2hCountry2");
-
-        const wins1 = document.getElementById("h2hWins1");
-        const wins2 = document.getElementById("h2hWins2");
-
-        const matches = document.getElementById("h2hMatches");
-
-        const left = document.getElementById("h2hLeft");
-        const right = document.getElementById("h2hRight");
-
-        const note = document.getElementById("h2hNote");
-
-        if (!name1 || !name2) {
-            return;
-        }
-
-        name1.textContent = player1.name;
-        name2.textContent = player2.name;
-
-        if (country1) {
-            country1.textContent = getCountry(player1);
-        }
-
-        if (country2) {
-            country2.textContent = getCountry(player2);
-        }
-
-        if (wins1) {
-            wins1.textContent = "—";
-        }
-
-        if (wins2) {
-            wins2.textContent = "—";
-        }
-
-        if (matches) {
-            matches.textContent = "—";
-        }
-
-        if (left) {
-            left.style.width = "50%";
-        }
-
-        if (right) {
-            right.style.width = "50%";
-        }
-
-        if (note) {
-            note.textContent =
-                "Verified head-to-head data is not available from the current profile endpoint.";
-        }
-    }
-
-
-    // --------------------------------------------------
-    // ANALYSIS
-    // --------------------------------------------------
-
-    function renderAnalysis(player1, player2) {
-
-        const analysisText =
-            document.getElementById("analysisText");
-
-        if (!analysisText) {
-            return;
-        }
-
-        const rank1 = Number(player1.rank);
-        const rank2 = Number(player2.rank);
-
-        if (
-            Number.isFinite(rank1) &&
-            Number.isFinite(rank2)
-        ) {
-
-            if (rank1 < rank2) {
-
-                analysisText.textContent =
-                    `${player1.name} currently has the higher ATP ranking ` +
-                    `(#${rank1}) compared with ${player2.name} (#${rank2}).`;
-
-            } else if (rank2 < rank1) {
-
-                analysisText.textContent =
-                    `${player2.name} currently has the higher ATP ranking ` +
-                    `(#${rank2}) compared with ${player1.name} (#${rank1}).`;
-
-            } else {
-
-                analysisText.textContent =
-                    "Both players currently have the same ranking position.";
-            }
-
-        } else {
-
-            analysisText.textContent =
-                `The profiles of ${player1.name} and ${player2.name} were loaded, ` +
-                "but ranking data was not available.";
-        }
-    }
-
-
-    // --------------------------------------------------
-    // HIDE REAL RESULTS
-    // --------------------------------------------------
-
-    function hideRealResults() {
-
-        document.getElementById("comparisonSection")
-            ?.classList.add("hidden");
-
-        document.getElementById("performanceSection")
-            ?.classList.add("hidden");
-
-        document.getElementById("h2hSection")
-            ?.classList.add("hidden");
-
-        document.getElementById("recentMatchesSection")
-            ?.classList.add("hidden");
-
-        document.getElementById("analysisSection")
-            ?.classList.add("hidden");
-    }
-
-
-    // --------------------------------------------------
-    // REAL PLAYER ANALYSIS
-    // --------------------------------------------------
-
-    window.findRealMatch = async function () {
-
-        const player1Name = select1.value;
-        const player2Name = select2.value;
-
-        if (!player1Name || !player2Name) {
-
-            alert("Please select two players.");
-            return;
-        }
-
-        if (player1Name === player2Name) {
-
-            alert("Please select two different players.");
-            return;
-        }
-
-        const button =
-            document.querySelector(
-                '#realMatch button[onclick="findRealMatch()"]'
-            );
-
-        const originalText =
-            button?.textContent || "Analyze Players 🎾";
-
-        if (button) {
-
-            button.disabled = true;
-            button.textContent = "Loading...";
-        }
-
-        hideRealResults();
-
-        try {
-
-            console.log("Loading player 1:", player1Name);
-            console.log("Loading player 2:", player2Name);
-
-            const [player1, player2] =
-                await Promise.all([
-                    getPlayer(player1Name),
-                    getPlayer(player2Name)
-                ]);
-
-            console.log("Player 1 data:", player1);
-            console.log("Player 2 data:", player2);
-
-            renderPlayerCard(
-                player1,
-                "playerResult1"
-            );
-
-            renderPlayerCard(
-                player2,
-                "playerResult2"
-            );
-
-            renderPerformance(
-                player1,
-                player2
-            );
-
-            renderHeadToHead(
-                player1,
-                player2
-            );
-
-            renderAnalysis(
-                player1,
-                player2
-            );
-
-            document.getElementById("comparisonSection")
-                ?.classList.remove("hidden");
-
-            document.getElementById("performanceSection")
-                ?.classList.remove("hidden");
-
-            document.getElementById("h2hSection")
-                ?.classList.remove("hidden");
-
-            document.getElementById("analysisSection")
-                ?.classList.remove("hidden");
-
-            document.getElementById("recentMatchesSection")
-                ?.classList.remove("hidden");
-
-            const recentMatches =
-                document.getElementById("recentMatches");
-
-            if (recentMatches) {
-
-                recentMatches.innerHTML = `
-                    <div class="status">
-                        Recent match history is not connected yet.
-                    </div>
-                `;
-            }
-
-            document.getElementById("comparisonSection")
-                ?.scrollIntoView({
-                    behavior: "smooth"
-                });
-
-        } catch (error) {
-
-            console.error(
-                "Player loading failed:",
-                error
-            );
-
-            const comparison =
-                document.getElementById(
-                    "comparisonSection"
-                );
-
-            if (comparison) {
-
-                comparison.classList.remove("hidden");
-
-                document.getElementById(
-                    "playerResult1"
-                ).innerHTML = `
-                    <div class="status error">
-                        <strong>
-                            Could not load player data.
-                        </strong>
-
-                        <br><br>
-
-                        ${escapeHtml(error.message)}
-                    </div>
-                `;
-
-                document.getElementById(
-                    "playerResult2"
-                ).innerHTML = `
-                    <div class="status error">
-                        The RapidAPI request failed.
-                    </div>
-                `;
-            }
-
-        } finally {
-
-            if (button) {
-
-                button.disabled = false;
-                button.textContent = originalText;
-            }
-        }
-    };
-
-
-    // --------------------------------------------------
-    // MANUAL MATCH ANALYSIS
-    // --------------------------------------------------
-
-    window.analyzeMatch = function () {
-
-        const player1Name =
-            document.getElementById("player1")
-                ?.value.trim() || "Player 1";
-
-        const player2Name =
-            document.getElementById("player2")
-                ?.value.trim() || "Player 2";
-
-        const serve1 =
-            Number(document.getElementById("serve1")?.value);
-
-        const serve2 =
-            Number(document.getElementById("serve2")?.value);
-
-        const winners1 =
-            Number(document.getElementById("winners1")?.value);
-
-        const winners2 =
-            Number(document.getElementById("winners2")?.value);
-
-        const errors1 =
-            Number(document.getElementById("errors1")?.value);
-
-        const errors2 =
-            Number(document.getElementById("errors2")?.value);
-
-
-        if (
-            !Number.isFinite(serve1) ||
-            !Number.isFinite(serve2) ||
-            !Number.isFinite(winners1) ||
-            !Number.isFinite(winners2) ||
-            !Number.isFinite(errors1) ||
-            !Number.isFinite(errors2)
-        ) {
-
-            alert("Please enter all match statistics.");
-            return;
-        }
-
-
-        if (
-            serve1 < 0 ||
-            serve1 > 100 ||
-            serve2 < 0 ||
-            serve2 > 100
-        ) {
-
-            alert(
-                "First serve percentage must be between 0 and 100."
-            );
-
-            return;
-        }
-
-
-        document.getElementById("player1Name")
-            .textContent = player1Name;
-
-        document.getElementById("player2Name")
-            .textContent = player2Name;
-
-        document.getElementById("serveResult1")
-            .textContent = `${serve1}%`;
-
-        document.getElementById("serveResult2")
-            .textContent = `${serve2}%`;
-
-        document.getElementById("winnerResult1")
-            .textContent = winners1;
-
-        document.getElementById("winnerResult2")
-            .textContent = winners2;
-
-        document.getElementById("errorResult1")
-            .textContent = errors1;
-
-        document.getElementById("errorResult2")
-            .textContent = errors2;
-
-
-        const maxWinners =
-            Math.max(winners1, winners2, 1);
-
-        const maxErrors =
-            Math.max(errors1, errors2, 1);
-
-
-        const score1 =
-            (serve1 * 0.4) +
-            ((winners1 / maxWinners) * 100 * 0.4) +
-            ((1 - errors1 / (maxErrors + 1)) * 100 * 0.2);
-
-
-        const score2 =
-            (serve2 * 0.4) +
-            ((winners2 / maxWinners) * 100 * 0.4) +
-            ((1 - errors2 / (maxErrors + 1)) * 100 * 0.2);
-
-
-        let resultText;
-
-
-        if (Math.abs(score1 - score2) < 0.5) {
-
-            resultText =
-                `${player1Name} and ${player2Name} are very closely matched ` +
-                "based on the entered statistics.";
-
-        } else if (score1 > score2) {
-
-            resultText =
-                `${player1Name} has the stronger statistical indicator ` +
-                `(${score1.toFixed(1)} vs ${score2.toFixed(1)}).`;
-
-        } else {
-
-            resultText =
-                `${player2Name} has the stronger statistical indicator ` +
-                `(${score2.toFixed(1)} vs ${score1.toFixed(1)}).`;
-        }
-
-
-        const result =
-            document.getElementById("result");
-
-        if (result) {
-            result.textContent = resultText;
-        }
-
-
-        document.getElementById("results")
-            ?.classList.remove("hidden");
-
-
-        document.getElementById("results")
-            ?.scrollIntoView({
-                behavior: "smooth"
-            });
-    };
-
-
-    console.log("Tennis Match Analyzer JS loaded successfully.");
+  }
 
 });
